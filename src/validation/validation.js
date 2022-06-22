@@ -2,10 +2,13 @@ const mongoose = require('mongoose')
 
 
 const isValid = (value)=>{
-    if(typeof value ==="Undefined" || value===null) return{ status : false} 
-    if(typeof value ==="String" ) return true
+    if(typeof value ==="Undefined" || value===null) return false 
+    if (typeof value === "string" && value.trim().length === 0) return false;
+    return true;
+  }
 
-}
+
+
 
 
 const isValidRequestBody = function (requestBody) {

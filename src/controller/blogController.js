@@ -1,10 +1,7 @@
 const blogModel = require("../models/blogModel")
-
 const authorModel = require("../models/authorModel")
-//const ObjectId = require('mongoose').Types.ObjectId;
 const mongoose = require('mongoose')
 const validator = require('../validation/validation')
-//const { request } = require("express")
 
 
 
@@ -16,57 +13,43 @@ const createBlog = async function (req, res) {
         let data = req.body
         let id = req.body.authorId
 
-        if(!validator.isValidRequestBody(data)){
-            return res.status(400).send({status : false ,msg: "Invalid request body"})
+        if (!validator.isValidRequestBody(data)) {
+            return res.status(400).send({ status: false, msg: "Invalid request body" })
         }
-        const { title, body, authorId, category} = data;
+        const { title, body, authorId, category } = data;
 
-     if(!validator.isValid(title)){
-        return res.status(400).send({status : false ,msg: "title required"})
-     }
-     if(!validator.isValid(body)){
-        return res.status(400).send({status : false ,msg: "body required"})
-     }
-     if(!validator.isValid(category)){
-        return res.status(400).send({status : false ,msg: "category required"})
-     }
-     if(!validator.isValid(authorId)){
-        return res.status(400).send({status : false ,msg: "authorId required"})
-     }
+        if (!validator.isValid(title)) {
+            return res.status(400).send({ status: false, msg: "title required" })
+        }
+        if (!validator.isValid(body)) {
+            return res.status(400).send({ status: false, msg: "body required" })
+        }
+        if (!validator.isValid(category)) {
+            return res.status(400).send({ status: false, msg: "category required" })
+        }
+        if (!validator.isValid(authorId)) {
+            return res.status(400).send({ status: false, msg: "authorId required" })
+        }
 
-     if(!validator.isValidObjectId(authorId)){
-        return res.status(400).send({status : false ,msg: "authorId required"})
-     }
-     const findAuthor = await authorModel.findById(id);
-    if (!findAuthor) {
-      return res
-        .status(400)
-        .send({ status: false, message: `Author does not exists.` });
-    }
-
-     let savedata = await blogModel.create(data)
-     return res.status(201).send({status: true,message: " blog created successfully", savedata });
-
-
-
-
-
-
-        // if ((title && body && authorId && category) && (typeof (title) == String) && (typeof (body) == String) && (mongoose.Types.ObjectId.isValid(authorId)) && (typeof (category) == String)) {
-          
-         
-        //     res.status(201).send({ status: true, msg: savedata })
-        // }
-
-
-        // else {
-        //     res.status(403).send({ status: false, msg: "invalid Input" })
-        // }
-
+        if (!validator.isValidObjectId(authorId)) {
+            return res.status(400).send({ status: false, msg: " Invalid authorId required" })
+        }
+        const findAuthor = await authorModel.findById(id);
+        if (!findAuthor) {
+            return res
+                .status(400)
+                .send({ status: false, message: `Author does not exists.` });
+        }
+        try {
+            let savedata = await blogModel.create(data)
+            return res.status(201).send({ status: true, message: " blog created successfully", savedata });
+        }
+        catch (err) {
+            res.status(400).send({ status: false, message: err.message })
+        }
     }
     catch (error) {
         res.status(500).send({ status: false, msg: error.message })
-
     }
 }
 
