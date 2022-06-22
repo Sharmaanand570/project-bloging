@@ -7,7 +7,7 @@ const createAuthor = async function (req, res) {
         if (!(fname && lname && title && email && password)) {
             res.status(400).send({ status: true, msg: "data not found" })
         }
-        if ((typeof (fname) || typeof (lname) || typeof (title) || typeof (email) || typeof (password)) === Number) {
+        if ((typeof(fname)!==String) || (typeof(lname)!==String) || (typeof(title)!==String) || (typeof(email)!==String) || (typeof(password)!==String)) {
             res.status(400).send({ status: true, msg: "please input value in string" })
         }
         let checkMail = await AuthorModel.findOne({ email: email })
