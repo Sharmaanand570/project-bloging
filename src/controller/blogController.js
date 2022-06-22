@@ -1,3 +1,5 @@
+const blogModel = require("../models/blogModel")
+const mongoose = require("mongoose")
 
 const createBlogg = async function (req, res) {
 
@@ -12,11 +14,70 @@ const updateBlogg = async function (req, res) {
 }
 
 const deleteBloggById = async function (req, res) {
-
+    try {
+        const bloggId = req.params.blogId
+        if (mongoose.Types.ObjectId.isValid(bloggId)) {
+            const bloggDetails = await blogModel.findById(bloggId)
+            if (!bloggDetails) {
+                res.status(404).send({ status: false, msg: "Blogg Data is Not Available" })
+            }
+            else {
+                if (bloggDetails.isDeleted === true) {
+                    res.status(400).send({ status: false, msg: "Data Already Deleted" })
+                }
+                else {
+                    await blogModel.findByIdAndUpdate({ _id: bloggId }, { isDeleted: true, deletedAt: new Date() })
+                    res.status(200).send()
+                }
+            }
+        }
+        else {
+            res.status(400).send({ status: true, msg: "Blogg ID is Not Valid" })
+        }
+    }
+    catch (error) {
+        res.status(500).send({ status: false, msg: error.message })
+    }
 }
 
 const deleteBloggByQueryParams = async function (req, res) {
-
+    try {
+        const { category, authorId, isPublished } = req.query
+        const tagsData = req.query.tags
+        const subcategoryData = req.query.subcategory
+        if (category && authorId && tagsData && isPublished && subcategoryData) {
+            const bloggDetails = await blogModel.find({
+                category,
+                authorId,
+                tags: { $elemMatch: { $eq: tagsData } },
+                isPublished,
+                isDeleted: false,
+                subcategory: {
+                    $elemMatch: { $eq: subcategoryData },
+                }
+            })
+            if (Object.keys(bloggDetails).length === 0) {
+                res.status(404).send({ status: false, msg: "Blogg Data is Not Available" })
+            }
+            else {
+                await blogModel.updateMany({
+                    category,
+                    authorId,
+                    tags: { $elemMatch: { $eq: tagsData } },
+                    isPublished,
+                    subcategory: { $elemMatch: { $eq: subcategoryData } }
+                },
+                    { isDeleted: true, deletedAt: new Date() })
+                res.status(200).send()
+            }
+        }
+        else {
+            res.status(400).send({ status: false, msg: "require data not matched" })
+        }
+    }
+    catch (error) {
+        res.status(500).send({ status: false, msg: error.message })
+    }
 }
 
 module.exports.createBlogg = createBlogg
