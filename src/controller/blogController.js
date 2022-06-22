@@ -1,35 +1,50 @@
 const blogModel = require("../models/blogModel")
 const authorModel = require("../models/authorModel")
 const mongoose = require('mongoose')
-
+const validator = require('../validator/validator')
 
 const createBlog = async function (req, res) {
     try {
+
+
         let data = req.body
-        if (Object.keys(data).length === 0) {
-            return res.status(400).send({ status: false, msg: "Invalid request body" })
-        }
-        if (!mongoose.Types.ObjectId.isValid(data.authorId)) {
-            return res.status(400).send({ status: false, msg: "Invalid authorId" })
-        }
-        const findAuthor = await authorModel.findById(data.authorId);
+        let id = req.body.authorId
+        if (!validator.isValidReqBody(data)) { return res.status(400).send({ status: false, msg: "invalid request put valid data in body" })}
+        const { title, body, authorId, category } = data
+       
+        if (!validator.isValid(title)) { return res.status(400).send({ status: false, msg: "title required" }) }
+        if (!validator.isValid(body)) { return res.status(400).send({ status: false, msg: "body Request" }) }
+        if (!validator.isValid(authorId)) { return res.status(400).send({ status: false, msg: "autherId required" }) }
+        if (!validator.isValid(category)) { return res.status(400).send({ status: false, msg: "category required" }) }
+        if (!validator.isValidObjId(authorId)) { return res.status(400).send({ status: false, msg: "AutherId invalid" }) }
+
+        const findAuthor = await authorModel.findById(id)
         if (!findAuthor) {
-            return res
-                .status(400)
-                .send({ status: false, message: `Author does not exists.` });
+            return res.status(400).send("Auther not exists")
         }
-        try {
-            let savedata = await blogModel.create(data)
-            return res.status(201).send({ status: true, message: " blog created successfully", savedata });
-        }
-        catch (err) {
-            res.status(400).send({ status: false, message: err.message })
-        }
+        let saveData = await blogModel.create(data)
+        return res.status(201).send({ status: true, msg: "Blog created succesfully", saveData })
+
+
+} catch (error) {
+        return res.status(500).send({ status: false, msg: error.message })
     }
-    catch (error) {
-        res.status(500).send({ status: false, msg: error.message })
-    }
+
+
+
 }
+
+
+
+
+
+
+
+
+
+
+
+
 
 const getBlogg = async function (req, res) {
     try {
