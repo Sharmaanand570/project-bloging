@@ -108,13 +108,8 @@ const deleteBloggById = async function (req, res) {
                     res.status(400).send({ status: false, msg: "Data Already Deleted" })
                 }
                 else {
-                    try {
-                        await blogModel.findByIdAndUpdate({ _id: bloggId }, { isDeleted: true, deletedAt: new Date() })
-                        res.status(200).send()
-                    }
-                    catch (error) {
-                        res.status(400).send({ status: false, msg: error.message })
-                    }
+                    await blogModel.findByIdAndUpdate({ _id: bloggId }, { isDeleted: true, deletedAt: new Date() })
+                    res.status(200).send()
                 }
             }
         }
@@ -147,20 +142,15 @@ const deleteBloggByQueryParams = async function (req, res) {
                 res.status(404).send({ status: false, msg: "Blog Data is Not Available" })
             }
             else {
-                try {
-                    await blogModel.updateMany({
-                        category,
-                        authorId,
-                        tags: { $elemMatch: { $eq: tagsData } },
-                        isPublished,
-                        subcategory: { $elemMatch: { $eq: subcategoryData } }
-                    },
-                        { isDeleted: true, deletedAt: new Date() })
-                    res.status(200).send()
-                }
-                catch (error) {
-                    res.status(400).send({ status: false, msg: error.message })
-                }
+                await blogModel.updateMany({
+                    category,
+                    authorId,
+                    tags: { $elemMatch: { $eq: tagsData } },
+                    isPublished,
+                    subcategory: { $elemMatch: { $eq: subcategoryData } }
+                },
+                    { isDeleted: true, deletedAt: new Date() })
+                res.status(200).send()
             }
         }
         else {
