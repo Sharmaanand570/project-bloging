@@ -1,6 +1,6 @@
 const mongoose = require("mongoose");
 
-const blogSchema = new mongoose.schema( {
+const blogSchema = new mongoose.Schema( {
     title : { type : String , required : true },
     body : { type :  mongoose.Schema.Types.Mixed , required : true },
     authorId : {type : mongoose.Schema.Types.ObjectId,
