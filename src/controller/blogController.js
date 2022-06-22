@@ -6,26 +6,13 @@ const validator = require('../validation/validation')
 const createBlog = async function (req, res) {
     try {
         let data = req.body
-        let id = req.body.authorId
-
         if (!validator.isValidRequestBody(data)) {
             return res.status(400).send({ status: false, msg: "Invalid request body" })
         }
-        const { title, body, authorId, category } = data;
-
-        if (!validator.isValid(title)) {
-            return res.status(400).send({ status: false, msg: "title required" })
+        if (!mongoose.Types.ObjectId.isValid(data.authorId)) {
+            return res.status(400).send({ status: false, msg: "Invalid authorId" })
         }
-        if (!validator.isValid(body)) {
-            return res.status(400).send({ status: false, msg: "body required" })
-        }
-        if (!validator.isValid(category)) {
-            return res.status(400).send({ status: false, msg: "category required" })
-        }
-        if (!validator.isValid(authorId)) {
-            return res.status(400).send({ status: false, msg: "authorId required" })
-        }
-        const findAuthor = await authorModel.findById(id);
+        const findAuthor = await authorModel.findById(data.authorId);
         if (!findAuthor) {
             return res
                 .status(400)
@@ -91,7 +78,7 @@ const updateBlogg = async function (req, res) {
                     return res.status(200).send({ status: true, data: Updatedata })
                 }
                 catch (error) {
-                    res.staus(400).send("")
+                    res.staus(400).send({ status: false, msg: error.message })
                 }
             }
             else {
@@ -121,8 +108,13 @@ const deleteBloggById = async function (req, res) {
                     res.status(400).send({ status: false, msg: "Data Already Deleted" })
                 }
                 else {
-                    await blogModel.findByIdAndUpdate({ _id: bloggId }, { isDeleted: true, deletedAt: new Date() })
-                    res.status(200).send()
+                    try {
+                        await blogModel.findByIdAndUpdate({ _id: bloggId }, { isDeleted: true, deletedAt: new Date() })
+                        res.status(200).send()
+                    }
+                    catch (error) {
+                        res.status(400).send({ status: false, msg: error.message })
+                    }
                 }
             }
         }
@@ -155,15 +147,20 @@ const deleteBloggByQueryParams = async function (req, res) {
                 res.status(404).send({ status: false, msg: "Blog Data is Not Available" })
             }
             else {
-                await blogModel.updateMany({
-                    category,
-                    authorId,
-                    tags: { $elemMatch: { $eq: tagsData } },
-                    isPublished,
-                    subcategory: { $elemMatch: { $eq: subcategoryData } }
-                },
-                    { isDeleted: true, deletedAt: new Date() })
-                res.status(200).send()
+                try {
+                    await blogModel.updateMany({
+                        category,
+                        authorId,
+                        tags: { $elemMatch: { $eq: tagsData } },
+                        isPublished,
+                        subcategory: { $elemMatch: { $eq: subcategoryData } }
+                    },
+                        { isDeleted: true, deletedAt: new Date() })
+                    res.status(200).send()
+                }
+                catch (error) {
+                    res.status(400).send({ status: false, msg: error.message })
+                }
             }
         }
         else {
