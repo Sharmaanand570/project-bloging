@@ -9,34 +9,34 @@ const getBlogg = async function (req, res) {
     try {
         let blogs = await blogModel.find({ isDeleted: false, isPublished: true });
         if (blogs.length === 0) {
-           return res.status(404).send({ status: false, msg: "blogs not found" });
+            return res.status(404).send({ status: false, msg: "blogs not found" });
         }
-        let author_id = req.query.author_id.toString();
+        let author_id = req.query.authorId
         const { category, tag, subcategory } = req.query
-        
-        let temp =[]
-        for( let i=0 ; i<blogs.length ; i++) {
-            let x=blogs[i];
-            
-            if( (x.authorId.toString() === author_id) ) {
+
+        let temp = []
+        for (let i = 0; i < blogs.length; i++) {
+            let x = blogs[i];
+
+            if ((x.authorId.toString() === author_id)) {
                 temp.push(x)
                 console.log(x.authorId)
             }
-            if( (x.category === category) ) {
+            if ((x.category === category)) {
                 temp.push(x)
             }
-            if( (x.subcategory.includes(subcategory)) ) {
+            if ((x.subcategory.includes(subcategory))) {
                 temp.push(x)
             }
-            if( x.tags.includes(tag) ) {
+            if (x.tags.includes(tag)) {
                 temp.push(x)
             }
-        }    
-        
-        if(temp.length===0) {
-            res.status(404).send({ status : false , msg : "data not found"})
         }
-        else  res.send({ status: true, Data: temp })
+
+        if (temp.length === 0) {
+            res.status(404).send({ status: false, msg: "data not found" })
+        }
+        else res.send({ status: true, Data: temp })
 
     } catch (err) {
         res.status(500).send({ status: false, error: err.message })
