@@ -11,16 +11,16 @@ const getBlogg = async function (req, res) {
         if (blogs.length === 0) {
            return res.status(404).send({ status: false, msg: "blogs not found" });
         }
-        let author_id = req.query.author_id.toString();
+        console.log(blogs)
+        let authorId = req.query.authorId;
         const { category, tag, subcategory } = req.query
         
         let temp =[]
         for( let i=0 ; i<blogs.length ; i++) {
             let x=blogs[i];
-            
-            if( (x.authorId.toString() === author_id) ) {
+             
+            if( (x.authorId.toString() === authorId) ) {
                 temp.push(x)
-                console.log(x.authorId)
             }
             if( (x.category === category) ) {
                 temp.push(x)
