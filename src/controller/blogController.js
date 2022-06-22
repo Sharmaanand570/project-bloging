@@ -14,6 +14,13 @@ const createBlog = async function (req, res) {
 
     try {
         let data = req.body
+        const { title, body,authorId , category } = data;
+        if (!(title && body && authorId && category)) {
+            res.status(400).send({ status: false, msg: "data not found" })
+        }
+        if ((typeof (title) || typeof (body) || typeof (authorId) || typeof (category) ) === Number) {
+            res.status(400).send({ status: true, msg: "please input value in string" })
+        }
         let id = req.body.authorId
         const checkId = await authorModel.findById(id)
         
@@ -41,6 +48,7 @@ const getBlogg = async function (req, res) {
         if (blogs.length === 0) {
             return res.status(404).send({ status: false, msg: "blogs not found" });
         }
+
 
         let author_id = req.query.author_id.toString();
         let Category = req.query.category;
@@ -73,6 +81,34 @@ const getBlogg = async function (req, res) {
         }
         console.log(temp)
         res.send({ status: true, Data: temp })
+
+       // let author_id = req.query.author_id.toString();
+        const { category, tag, subcategory } = req.query
+        
+       // let temp =[]
+        for( let i=0 ; i<blogs.length ; i++) {
+            let x=blogs[i];
+            
+            if( (x.authorId.toString() === author_id) ) {
+                temp.push(x)
+                console.log(x.authorId)
+            }
+            if( (x.category === category) ) {
+                temp.push(x)
+            }
+            if( (x.subcategory.includes(subcategory)) ) {
+                temp.push(x)
+            }
+            if( x.tags.includes(tag) ) {
+                temp.push(x)
+            }
+        }    
+        
+        if(temp.length===0) {
+            res.status(404).send({ status : false , msg : "data not found"})
+        }
+        else  res.send({ status: true, Data: temp })
+
 
     } catch (err) {
         res.status(500).send({ status: false, error: err.message })
@@ -158,7 +194,7 @@ const deleteBloggByQueryParams = async function (req, res) {
                 }
             })
             if (Object.keys(bloggDetails).length === 0) {
-                res.status(404).send({ status: false, msg: "Blogg Data is Not Available" })
+                res.status(404).send({ status: false, msg: "Blog Data is Not Available" })
             }
             else {
                 await blogModel.updateMany({
