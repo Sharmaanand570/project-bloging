@@ -21,12 +21,14 @@ const getBlogg = async function (req, res) {
         console.log(blogs)
         console.log(Category)
         console.log(author_id)
-       
+        
         let temp =[]
         for( let i=0 ; i<blogs.length ; i++) {
             let x=blogs[i];
-            if( (x.authorId === author_id) ) {
+            
+            if( (x.authorId.toString() === author_id) ) {
                 temp.push(x)
+                console.log(x.authorId)
             }
             if( (x.category === Category) ) {
                 temp.push(x)
