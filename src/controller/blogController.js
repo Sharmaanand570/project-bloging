@@ -11,17 +11,8 @@ const getBlogg = async function (req, res) {
         if (blogs.length === 0) {
            return res.status(404).send({ status: false, msg: "blogs not found" });
         }
-        
         let author_id = req.query.author_id.toString();
-        let Category = req.query.category;
-        let Tag = req.query.tag;
-        let Subcategory = req.query.subcategory;
-        if ((!author_id) & (!Category) & (!Tag) & (!Subcategory)) {
-            res.send({ status : false, msg : "query not found"})
-        }
-        console.log(blogs)
-        console.log(Category)
-        console.log(author_id)
+        const { category, tag, subcategory } = req.query
         
         let temp =[]
         for( let i=0 ; i<blogs.length ; i++) {
@@ -31,18 +22,21 @@ const getBlogg = async function (req, res) {
                 temp.push(x)
                 console.log(x.authorId)
             }
-            if( (x.category === Category) ) {
+            if( (x.category === category) ) {
                 temp.push(x)
             }
-            if( (x.subcategory.includes(Subcategory)) ) {
+            if( (x.subcategory.includes(subcategory)) ) {
                 temp.push(x)
             }
-            if( x.tags.includes(Tag) ) {
+            if( x.tags.includes(tag) ) {
                 temp.push(x)
             }
         }    
-        console.log(temp)
-        res.send({ status: true, Data: temp })
+        
+        if(temp.length===0) {
+            res.status(404).send({ status : false , msg : "data not found"})
+        }
+        else  res.send({ status: true, Data: temp })
 
     } catch (err) {
         res.status(500).send({ status: false, error: err.message })
@@ -97,7 +91,7 @@ const deleteBloggByQueryParams = async function (req, res) {
                 }
             })
             if (Object.keys(bloggDetails).length === 0) {
-                res.status(404).send({ status: false, msg: "Blogg Data is Not Available" })
+                res.status(404).send({ status: false, msg: "Blog Data is Not Available" })
             }
             else {
                 await blogModel.updateMany({
