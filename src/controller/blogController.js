@@ -1,12 +1,12 @@
 const blogModel = require("../models/blogModel")
 const authorModel = require("../models/authorModel")
 const mongoose = require('mongoose')
-const validator = require('../validation/validation')
+
 
 const createBlog = async function (req, res) {
     try {
         let data = req.body
-        if (!validator.isValidRequestBody(data)) {
+        if (Object.keys(data).length === 0) {
             return res.status(400).send({ status: false, msg: "Invalid request body" })
         }
         if (!mongoose.Types.ObjectId.isValid(data.authorId)) {
