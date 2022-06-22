@@ -5,7 +5,7 @@ const  mongoose = require('mongoose');
 const app = express();
 
 app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: true }));
+//app.use(bodyParser.urlencoded({ extended: true }));
 
 
 mongoose.connect("mongodb+srv://radon-AnandSharma:Anand570@cluster0.riu1k.mongodb.net/group18Database?retryWrites=true&w=majority", {
@@ -17,7 +17,12 @@ mongoose.connect("mongodb+srv://radon-AnandSharma:Anand570@cluster0.riu1k.mongod
 app.use('/', route);
 
 
+// app.listen(process.env.PORT || 3000, function () {
+//     console.log('Express app running on port ' + (process.env.PORT || 3000))
+// });
+
 app.listen(process.env.PORT || 3000, function () {
     console.log('Express app running on port ' + (process.env.PORT || 3000))
 });
+
 

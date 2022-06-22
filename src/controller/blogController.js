@@ -1,9 +1,65 @@
 const blogModel = require("../models/blogModel")
-const mongoose = require("mongoose")
+const authorModel = require("../models/authorModel")
+const mongoose = require('mongoose')
+const validator = require('../validation/validation')
 
-const createBlogg = async function (req, res) {
+const createBlog = async function (req, res) {
 
+    try {
+        let data = req.body
+        let id = req.body.authorId
+
+        if (!validator.isValidRequestBody(data)) {
+            return res.status(400).send({ status: false, msg: "Invalid request body" })
+        }
+        const { title, body, authorId, category } = data;
+
+        if (!validator.isValid(title)) {
+            return res.status(400).send({ status: false, msg: "title required" })
+        }
+        if (!validator.isValid(body)) {
+            return res.status(400).send({ status: false, msg: "body required" })
+        }
+        if (!validator.isValid(category)) {
+            return res.status(400).send({ status: false, msg: "category required" })
+        }
+        if (!validator.isValid(authorId)) {
+            return res.status(400).send({ status: false, msg: "authorId required" })
+        }
+
+        if (!validator.isValidObjectId(authorId)) {
+            return res.status(400).send({ status: false, msg: "authorId required" })
+        }
+        const findAuthor = await authorModel.findById(id);
+        if (!findAuthor) {
+            return res
+                .status(400)
+                .send({ status: false, message: `Author does not exists.` });
+        }
+
+        let savedata = await blogModel.create(data)
+        return res.status(201).send({ status: true, message: " blog created successfully", savedata });
+
+        // if ((title && body && authorId && category) && (typeof (title) == String) && (typeof (body) == String) && (mongoose.Types.ObjectId.isValid(authorId)) && (typeof (category) == String)) {
+
+
+        //     res.status(201).send({ status: true, msg: savedata })
+        // }
+
+
+        // else {
+        //     res.status(403).send({ status: false, msg: "invalid Input" })
+        // }
+
+    }
+    catch (error) {
+        res.status(500).send({ status: false, msg: error.message })
+
+    }
 }
+
+
+
 
 const getBlogg = async function (req, res) {
     try {
@@ -13,7 +69,6 @@ const getBlogg = async function (req, res) {
         }
         let author_id = req.query.authorId
         const { category, tag, subcategory } = req.query
-
         let temp = []
         for (let i = 0; i < blogs.length; i++) {
             let x = blogs[i];
@@ -32,20 +87,43 @@ const getBlogg = async function (req, res) {
                 temp.push(x)
             }
         }
-
         if (temp.length === 0) {
             res.status(404).send({ status: false, msg: "data not found" })
         }
         else res.send({ status: true, Data: temp })
-
     } catch (err) {
         res.status(500).send({ status: false, error: err.message })
     }
 }
 
 const updateBlogg = async function (req, res) {
-
+    try {
+        const blogId = req.params.blogId
+        const data = req.body
+        if (mongoose.Types.ObjectId.isValid(blogId)) {
+            const bloggDetails = await blogModel.findById(blogId)
+            if (bloggDetails && bloggDetails.isDeleted == false) {
+                try{
+                let Updatedata = await blogModel.findOneAndUpdate({ _id: blogId }, data, { new: true })
+                return res.status(200).send({ status: true, data: Updatedata })
+                }
+                catch(error){
+                    res.staus(400).send("")
+                }
+            }
+            else {
+                res.send({ status: false, msg: "Data is not avaliable" })
+            }
+        }
+        else {
+            res.status(404).send({ status: false, msg: " blogId is Invalid" })
+        }
+    }
+    catch (error) {
+        return res.status(500).send({ status: false, msg: error.message })
+    }
 }
+
 
 const deleteBloggById = async function (req, res) {
     try {
@@ -114,7 +192,7 @@ const deleteBloggByQueryParams = async function (req, res) {
     }
 }
 
-module.exports.createBlogg = createBlogg
+module.exports.createBlog = createBlog
 module.exports.getBlogg = getBlogg
 module.exports.updateBlogg = updateBlogg
 module.exports.deleteBloggById = deleteBloggById
