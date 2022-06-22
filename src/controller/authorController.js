@@ -4,6 +4,7 @@ const createAuthor = async function (req, res) {
     try {
 
         let authorData = req.body;
+
         const { fname, lname, title, email, password } = authorData;
 
         if (!(fname && lname && title && email && password)) {
@@ -14,6 +15,7 @@ const createAuthor = async function (req, res) {
         if (checkMail) {
             return res.status(400).send({ status: false, msg: " dupllicate email" })
         }
+        
 
         if ((title !== "Mr") || (title !== "Mrs") || (title !== "Miss")) {
             res.status(400).send({ status: false, msg: "please enter correct title" })
@@ -28,10 +30,11 @@ const createAuthor = async function (req, res) {
             res.status(201).send({ status: true, data: savedAuthorData });
         }
         else {
-                                            
+                   res.status(400).send({ status : true , data: "data is invalid"})                         
         }
+           
 
-        
+    
     } catch (err) {
         res.status(500).send({ status: false, error: err.message })
     }
