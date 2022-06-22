@@ -4,7 +4,6 @@ const mongoose = require('mongoose')
 const validator = require('../validation/validation')
 
 const createBlog = async function (req, res) {
-
     try {
         let data = req.body
         let id = req.body.authorId
@@ -26,40 +25,24 @@ const createBlog = async function (req, res) {
         if (!validator.isValid(authorId)) {
             return res.status(400).send({ status: false, msg: "authorId required" })
         }
-
-        if (!validator.isValidObjectId(authorId)) {
-            return res.status(400).send({ status: false, msg: "authorId required" })
-        }
         const findAuthor = await authorModel.findById(id);
         if (!findAuthor) {
             return res
                 .status(400)
                 .send({ status: false, message: `Author does not exists.` });
         }
-
-        let savedata = await blogModel.create(data)
-        return res.status(201).send({ status: true, message: " blog created successfully", savedata });
-
-        // if ((title && body && authorId && category) && (typeof (title) == String) && (typeof (body) == String) && (mongoose.Types.ObjectId.isValid(authorId)) && (typeof (category) == String)) {
-
-
-        //     res.status(201).send({ status: true, msg: savedata })
-        // }
-
-
-        // else {
-        //     res.status(403).send({ status: false, msg: "invalid Input" })
-        // }
-
+        try {
+            let savedata = await blogModel.create(data)
+            return res.status(201).send({ status: true, message: " blog created successfully", savedata });
+        }
+        catch (err) {
+            res.status(400).send({ status: false, message: err.message })
+        }
     }
     catch (error) {
         res.status(500).send({ status: false, msg: error.message })
-
     }
 }
-
-
-
 
 const getBlogg = async function (req, res) {
     try {
@@ -103,11 +86,11 @@ const updateBlogg = async function (req, res) {
         if (mongoose.Types.ObjectId.isValid(blogId)) {
             const bloggDetails = await blogModel.findById(blogId)
             if (bloggDetails && bloggDetails.isDeleted == false) {
-                try{
-                let Updatedata = await blogModel.findOneAndUpdate({ _id: blogId }, data, { new: true })
-                return res.status(200).send({ status: true, data: Updatedata })
+                try {
+                    let Updatedata = await blogModel.findOneAndUpdate({ _id: blogId }, data, { new: true })
+                    return res.status(200).send({ status: true, data: Updatedata })
                 }
-                catch(error){
+                catch (error) {
                     res.staus(400).send("")
                 }
             }
