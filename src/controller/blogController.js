@@ -14,33 +14,64 @@ const createBlog = async function (req, res) {
 
     try {
         let data = req.body
-        const { title, body,authorId , category } = data;
-        if (!(title && body && authorId && category)) {
-            res.status(400).send({ status: false, msg: "data not found" })
-        }
-        if ((typeof (title) || typeof (body) || typeof (authorId) || typeof (category) ) === Number) {
-            res.status(400).send({ status: true, msg: "please input value in string" })
-        }
         let id = req.body.authorId
-        const checkId = await authorModel.findById(id)
-        
-        try {
-            let savedata = await blogModel.create(data)
 
-            res.status(201).send({ status: true, msg: savedata })
+        if(!validator.isValidRequestBody(data)){
+            return res.status(400).send({status : false ,msg: "Invalid request body"})
         }
-        catch (err) {
-            res.status(403).send({ status: false, msg: error.message })
-        }
+        const { title, body, authorId, category} = data;
 
-    } catch (error) {
-        res.status(500).send({ status: false, msg: error.message })
+     if(!validator.isValid(title)){
+        return res.status(400).send({status : false ,msg: "title required"})
+     }
+     if(!validator.isValid(body)){
+        return res.status(400).send({status : false ,msg: "body required"})
+     }
+     if(!validator.isValid(category)){
+        return res.status(400).send({status : false ,msg: "category required"})
+     }
+     if(!validator.isValid(authorId)){
+        return res.status(400).send({status : false ,msg: "authorId required"})
+     }
+
+     if(!validator.isValidObjectId(authorId)){
+        return res.status(400).send({status : false ,msg: "authorId required"})
+     }
+     const findAuthor = await authorModel.findById(id);
+    if (!findAuthor) {
+      return res
+        .status(400)
+        .send({ status: false, message: `Author does not exists.` });
     }
 
+     let savedata = await blogModel.create(data)
+     return res.status(201).send({status: true,message: " blog created successfully", savedata });
 
 
 
+
+
+
+        // if ((title && body && authorId && category) && (typeof (title) == String) && (typeof (body) == String) && (mongoose.Types.ObjectId.isValid(authorId)) && (typeof (category) == String)) {
+          
+         
+        //     res.status(201).send({ status: true, msg: savedata })
+        // }
+
+
+        // else {
+        //     res.status(403).send({ status: false, msg: "invalid Input" })
+        // }
+
+    }
+    catch (error) {
+        res.status(500).send({ status: false, msg: error.message })
+
+    }
 }
+
+
+
 
 const getBlogg = async function (req, res) {
     try {
@@ -82,32 +113,32 @@ const getBlogg = async function (req, res) {
         console.log(temp)
         res.send({ status: true, Data: temp })
 
-       // let author_id = req.query.author_id.toString();
+        // let author_id = req.query.author_id.toString();
         const { category, tag, subcategory } = req.query
-        
-       // let temp =[]
-        for( let i=0 ; i<blogs.length ; i++) {
-            let x=blogs[i];
-            
-            if( (x.authorId.toString() === author_id) ) {
+
+        // let temp =[]
+        for (let i = 0; i < blogs.length; i++) {
+            let x = blogs[i];
+
+            if ((x.authorId.toString() === author_id)) {
                 temp.push(x)
                 console.log(x.authorId)
             }
-            if( (x.category === category) ) {
+            if ((x.category === category)) {
                 temp.push(x)
             }
-            if( (x.subcategory.includes(subcategory)) ) {
+            if ((x.subcategory.includes(subcategory))) {
                 temp.push(x)
             }
-            if( x.tags.includes(tag) ) {
+            if (x.tags.includes(tag)) {
                 temp.push(x)
             }
-        }    
-        
-        if(temp.length===0) {
-            res.status(404).send({ status : false , msg : "data not found"})
         }
-        else  res.send({ status: true, Data: temp })
+
+        if (temp.length === 0) {
+            res.status(404).send({ status: false, msg: "data not found" })
+        }
+        else res.send({ status: true, Data: temp })
 
 
     } catch (err) {
