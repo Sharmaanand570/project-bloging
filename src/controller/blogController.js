@@ -15,7 +15,7 @@ const createBlog = async function (req, res) {
         if (!validator.isValid(authorId)) { return res.status(400).send({ status: false, msg: "autherId required" }) }
         if (!validator.isValid(category)) { return res.status(400).send({ status: false, msg: "category required" }) }
         if (!validator.isValidObjId(authorId)) { return res.status(400).send({ status: false, msg: "AutherId invalid" }) }
-        
+
         const findAuthor = await authorModel.findById(id)
         if (!findAuthor) {
             return res.status(400).send("Auther not exists")
@@ -72,20 +72,34 @@ const updateBlog = async function (req, res) {
 
         const { title, body, tags, category, subcategory } = data
         console.log(title)
-        if (title) { if (!validator.isValidKey(title)) { return res.status(400).send({ status: false, msg: "title required" }) } }
-        if (body) { if (!validator.isValidKey(body)) { return res.status(400).send({ status: false, msg: "body Request" }) } }
-        if (!validator.isValidArray(tags)) { return res.status(400).send({ status: false, msg: "tags elements required" }) }
-        if (tags) { if (!validator.isValidKey(tags)) { return res.status(400).send({ status: false, msg: "tags Required" }) } }
-        if (category) { if (!validator.isValidKey(category)) { return res.status(400).send({ status: false, msg: "category Required" }) } }
-        if (!validator.isValidArray(subcategory)) { return res.status(400).send({ status: false, msg: "subcategory required" }) }
-        if (!validator.isValidReqBody(data)) { return res.status(400).send({ status: false, msg: "invalid request put valid data in body" }) }
-        if (!validator.isValidObjId(blogId)) { return res.status(400).send({ status: false, msg: "blogId is invalid" }) }
+        if (title) {
+            if (!validator.isValidKey(title)) { return res.status(400).send({ status: false, msg: "title required" }) }
+        }
+        if (body) {
+            if (!validator.isValidKey(body)) { return res.status(400).send({ status: false, msg: "body Request" }) }
+        }
+        if (tags) {
+        if (!validator.isValidArray(tags)) { return res.status(400).send({ status: false, msg: "tags elements required" }) } }
+        
+        if (category) {
+            if (!validator.isValidKey(category)) { return res.status(400).send({ status: false, msg: "category Required" }) }
+        }
+        if (subcategory) {
+        if (!validator.isValidArray(subcategory)) {
+            return res.status(400).send({ status: false, msg: "subcategory required" })}
+        }
+        if (!validator.isValidReqBody(data)) {
+            return res.status(400).send({ status: false, msg: "invalid request put valid data in body" })
+        }
+        if (!validator.isValidObjId(blogId)) {
+            return res.status(400).send({ status: false, msg: "blogId is invalid" })
+        }
 
 
         if (tags.length === 0) { return res.status(400).send({ status: false, msg: "Provide tag" }) }
         if (subcategory.length === 0) { return res.status(400).send({ status: false, msg: " provide subcategory " }) }
 
-        let updatedata = await blogModel.findOneAndUpdate({ _id: blogId }, { published: true,  publishedAt: new Date() } ,data, { new: true })
+        let updatedata = await blogModel.findOneAndUpdate({ _id: blogId }, { published: true, publishedAt: new Date() }, data, { new: true })
         return res.status(200).send({ status: true, data: updatedata })
     }
 
@@ -138,7 +152,7 @@ const deleteBlogByQueryParams = async function (req, res) {
             const bloggDetails = await blogModel.find({
                 category,
                 authorId,
-                tags: { $in:tagsData },
+                tags: { $in: tagsData },
                 isPublished,
                 isDeleted: false,
                 subcategory: {
@@ -152,9 +166,9 @@ const deleteBlogByQueryParams = async function (req, res) {
                 await blogModel.updateMany({
                     category,
                     authorId,
-                    tags: { $in:tagsData  },
+                    tags: { $in: tagsData },
                     isPublished,
-                    subcategory: { $in:subcategoryData }
+                    subcategory: { $in: subcategoryData }
                 },
                     { isDeleted: true, deletedAt: new Date() })
                 res.status(200).send()
