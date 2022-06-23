@@ -7,15 +7,15 @@ const auth = require("../middleware/auth")
 
 router.post('/authors', authorController.createAuthor)
 
-router.post('/blogs',auth.authenticate, authe.authorise, blogController.createBlog)
+router.post('/blogs',auth.authenticate, auth.authorise, blogController.createBlog)
 
-router.get('/blogs',auth.authenticate, authe.authorise, blogController.getBlog)
+router.get('/blogs',auth.authenticate, auth.authorise, blogController.getBlog)
 
-router.put('/blogs/:blogId',auth.authenticate, authe.authorise, blogController.updateBlog)
+router.put('/blogs/:blogId', blogController.updateBlog)
 
-router.delete('/blogs/:blogId',auth.authenticate, authe.authorise, blogController.deleteBlogById)
+router.delete('/blogs/:blogId',auth.authenticate, auth.authorise, blogController.deleteBlogById)
 
-router.delete('/blogs',auth.authenticate, authe.authorise, blogController.deleteBlogByQueryParams)
+router.delete('/blogs',auth.authenticate, auth.authorise, blogController.deleteBlogByQueryParams)
 
 router.post('/login', authorController.authorLogin)
 
