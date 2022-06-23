@@ -11,11 +11,11 @@ router.post('/blogs',auth.authenticate, auth.authorise, blogController.createBlo
 
 router.get('/blogs',auth.authenticate, auth.authorise, blogController.getBlog)
 
-router.put('/blogs/:blogId',auth.authenticate, auth.authorise, blogController.updateBlog)
+router.put('/blogs/:blogId', auth.authenticate, auth.authorise,blogController.updateBlog)
 
 router.delete('/blogs/:blogId',auth.authenticate, auth.authorise, blogController.deleteBlogById)
 
-router.delete('/blogs', blogController.deleteBlogByQueryParams)
+router.delete('/blogs',auth.authenticate, auth.authorise, blogController.deleteBlogByQueryParams)
 
 router.post('/login', authorController.authorLogin)
 

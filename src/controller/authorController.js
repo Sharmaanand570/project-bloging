@@ -6,11 +6,11 @@ const createAuthor = async function (req, res) {
         let authorData = req.body;
 
         const { fname, lname, title, email, password } = authorData;
-
+         
         if (!(fname && lname && title && email && password)) {
             return res.status(400).send({ status: false, msg: "key value is not present" })
         }
-
+    
         let checkMail = await authorModel.findOne({ email: email });
         if (checkMail) {
             return res.status(400).send({ status: false, msg: " duplicate email" })
@@ -19,10 +19,10 @@ const createAuthor = async function (req, res) {
             res.status(400).send({ status: false, msg: "please enter correct title eg Mr,Mrs,Miss" })
         }
 
-        if (typeof (fname) === "string") {
-            if (typeof (lname) === "string") {
-                if (typeof (email) === "string") {
-                    if (typeof (password) === "string") {
+        if (typeof (fname) === "string" &&  fname.trim().length !== 0) {
+            if (typeof (lname) === "string"  &&  lname.trim().length !== 0) {
+                if (typeof (email) === "string"  &&  email.trim().length !== 0) {
+                    if (typeof (password) === "string"  &&  password.trim().length !== 0) {
                         let savedAuthorData = await authorModel.create(authorData);
                         if (!savedAuthorData) {
                             res.status(400).send({ status: false, msg: "cannot create data" })
