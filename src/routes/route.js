@@ -7,12 +7,12 @@ router.post('/authors', authorController.createAuthor)
 
 router.post('/blogs', blogController.createBlog)
 
-router.get('/blogs', blogController.getBlogg)
+router.get('/blogs', blogController.getBlog)
 
-router.put('/blogs/:blogId', blogController.updateBlogg)
+router.put('/blogs/:blogId', blogController.updateBlog)
 
-router.delete('/blogs/:blogId', blogController.deleteBloggById)
+router.delete('/blogs/:blogId', blogController.deleteBlogById)
 
-router.delete('/blogs', blogController.deleteBloggByQueryParams)
+router.delete('/blogs', blogController.deleteBlogByQueryParams)
 
 module.exports = router;

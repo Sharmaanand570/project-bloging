@@ -29,7 +29,7 @@ const createBlog = async function (req, res) {
     }
 }
 
-const getBlogg = async function (req, res) {
+const getBlog = async function (req, res) {
     try {
         let blogs = await blogModel.find({ isDeleted: false, isPublished: true });
         if (blogs.length === 0) {
@@ -65,31 +65,36 @@ const getBlogg = async function (req, res) {
     }
 }
 
-const updateBlogg = async function (req, res) {
+const updateBlog = async function (req, res) {
     try {
         const blogId = req.params.blogId
         const data = req.body
-        if (mongoose.Types.ObjectId.isValid(blogId)) {
-            const bloggDetails = await blogModel.findById(blogId)
-            if (bloggDetails && bloggDetails.isDeleted == false) {
-                let updatedata = await blogModel.findOneAndUpdate({ _id: blogId }, data, { new: true })
-                return res.status(200).send({ status: true, data: updatedata })
-            }
-            else {
-                res.send({ status: false, msg: "Data is not avaliable" })
-            }
+
+        const { title, body, tags, category,subcategory } = data
+
+        if (!validator.isValid(title)) { return res.status(400).send({ status: false, msg: "title required" }) }
+        if (!validator.isValid(body)) { return res.status(400).send({ status: false, msg: "body Request" }) }
+        if (!validator.isValid(tags)) { return res.status(400).send({ status: false, msg: "tags required" }) }
+        if (!validator.isValid(category)) { return res.status(400).send({ status: false, msg: "category required" }) }
+        if (!validator.isValid(subcategory)) { return res.status(400).send({ status: false, msg: "subcategory required" }) }
+        if (!validator.isValidReqBody(data)) { return res.status(400).send({ status: false, msg: "invalid request put valid data in body" }) }
+        if (!validator.isValidObjId(blogId)) { return res.status(400).send({ status: false, msg: "blogId is invalid" }) }
+        if(tags.filter(function(e){return e=null})){ return res.status(400).send({status:false,msg:"Provide tag"})}
+         let updatedata = await blogModel.findOneAndUpdate({ _id: blogId }, data, { new: true })
+         return res.status(200).send({ status: true, data: updatedata })
         }
-        else {
-            res.status(404).send({ status: false, msg: " blogId is Invalid" })
-        }
-    }
+        
+       
+      
+          // if (!isPublished==true) { return res.status(400).send({ status: false, msg: "Not published " }
+         
     catch (error) {
         return res.status(500).send({ status: false, msg: error.message })
     }
 }
 
 
-const deleteBloggById = async function (req, res) {
+const deleteBlogById = async function (req, res) {
     try {
         const bloggId = req.params.blogId
         if (mongoose.Types.ObjectId.isValid(bloggId)) {
@@ -116,7 +121,7 @@ const deleteBloggById = async function (req, res) {
     }
 }
 
-const deleteBloggByQueryParams = async function (req, res) {
+const deleteBlogByQueryParams = async function (req, res) {
     try {
         const { category, authorId, isPublished } = req.query
         const tagsData = req.query.tags
@@ -160,7 +165,7 @@ const deleteBloggByQueryParams = async function (req, res) {
 }
 
 module.exports.createBlog = createBlog
-module.exports.getBlogg = getBlogg
-module.exports.updateBlogg = updateBlogg
-module.exports.deleteBloggById = deleteBloggById
-module.exports.deleteBloggByQueryParams = deleteBloggByQueryParams
+module.exports.getBlog = getBlog
+module.exports.updateBlog = updateBlog
+module.exports.deleteBlogById = deleteBlogById
+module.exports.deleteBlogByQueryParams = deleteBlogByQueryParams
