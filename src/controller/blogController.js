@@ -29,7 +29,7 @@ const createBlog = async function (req, res) {
     }
 }
 
-const getBlogg = async function (req, res) {
+const getBlog = async function (req, res) {
     try {
         let blogs = await blogModel.find({ isDeleted: false, isPublished: true });
         if (blogs.length === 0) {
@@ -65,7 +65,7 @@ const getBlogg = async function (req, res) {
     }
 }
 
-const updateBlogg = async function (req, res) {
+const updateBlog = async function (req, res) {
     try {
         const blogId = req.params.blogId
         const data = req.body
@@ -89,7 +89,7 @@ const updateBlogg = async function (req, res) {
 }
 
 
-const deleteBloggById = async function (req, res) {
+const deleteBlogById = async function (req, res) {
     try {
         const bloggId = req.params.blogId
         if (mongoose.Types.ObjectId.isValid(bloggId)) {
@@ -116,7 +116,7 @@ const deleteBloggById = async function (req, res) {
     }
 }
 
-const deleteBloggByQueryParams = async function (req, res) {
+const deleteBlogByQueryParams = async function (req, res) {
     try {
         const { category, authorId, isPublished } = req.query
         const tagsData = req.query.tags
@@ -160,7 +160,7 @@ const deleteBloggByQueryParams = async function (req, res) {
 }
 
 module.exports.createBlog = createBlog
-module.exports.getBlogg = getBlogg
-module.exports.updateBlogg = updateBlogg
-module.exports.deleteBloggById = deleteBloggById
-module.exports.deleteBloggByQueryParams = deleteBloggByQueryParams
+module.exports.getBlog = getBlog
+module.exports.updateBlog = updateBlog
+module.exports.deleteBlogById = deleteBlogById
+module.exports.deleteBlogByQueryParams = deleteBlogByQueryParams
