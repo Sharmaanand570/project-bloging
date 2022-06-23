@@ -10,11 +10,21 @@ const createBlog = async function (req, res) {
         if (!validator.isValidReqBody(data)) { return res.status(400).send({ status: false, msg: "invalid request put valid data in body" }) }
         const { title, body, authorId, category } = data
 
-        if (!validator.isValid(title)) { return res.status(400).send({ status: false, msg: "title required" }) }
-        if (!validator.isValid(body)) { return res.status(400).send({ status: false, msg: "body Request" }) }
-        if (!validator.isValid(authorId)) { return res.status(400).send({ status: false, msg: "autherId required" }) }
-        if (!validator.isValid(category)) { return res.status(400).send({ status: false, msg: "category required" }) }
-        if (!validator.isValidObjId(authorId)) { return res.status(400).send({ status: false, msg: "AutherId invalid" }) }
+        if (!validator.isValid(title)) {
+            return res.status(400).send({ status: false, msg: "title required" })
+        }
+        if (!validator.isValid(body)) {
+            return res.status(400).send({ status: false, msg: "body Request" })
+        }
+        if (!validator.isValid(authorId)) {
+            return res.status(400).send({ status: false, msg: "authorId required" })
+        }
+        if (!validator.isValid(category)) {
+            return res.status(400).send({ status: false, msg: "category required" })
+        }
+        if (!validator.isValidObjId(authorId)) {
+            return res.status(400).send({ status: false, msg: "AuthorId invalid" })
+        }
 
         const findAuthor = await authorModel.findById(id)
         if (!findAuthor) {
@@ -71,22 +81,24 @@ const updateBlog = async function (req, res) {
         const data = req.body
 
         const { title, body, tags, category, subcategory } = data
-        console.log(title)
+        console.log(tags)
         if (title) {
-            if (!validator.isValidKey(title)) { return res.status(400).send({ status: false, msg: "title required" }) }
+            if (!validator.isValid(title)) { return res.status(400).send({ status: false, msg: "title required" }) }
         }
         if (body) {
-            if (!validator.isValidKey(body)) { return res.status(400).send({ status: false, msg: "body Request" }) }
+            if (!validator.isValid(body)) { return res.status(400).send({ status: false, msg: "body Request" }) }
         }
         if (tags) {
-        if (!validator.isValidArray(tags)) { return res.status(400).send({ status: false, msg: "tags elements required" }) } }
-        
+            if (!validator.isValidArray(tags)) { return res.status(400).send({ status: false, msg: "tags elements required" }) }
+        }
+
         if (category) {
-            if (!validator.isValidKey(category)) { return res.status(400).send({ status: false, msg: "category Required" }) }
+            if (!validator.isValid(category)) { return res.status(400).send({ status: false, msg: "category Required" }) }
         }
         if (subcategory) {
-        if (!validator.isValidArray(subcategory)) {
-            return res.status(400).send({ status: false, msg: "subcategory required" })}
+            if (!validator.isValidArray(subcategory)) {
+                return res.status(400).send({ status: false, msg: "subcategory required" })
+            }
         }
         if (!validator.isValidReqBody(data)) {
             return res.status(400).send({ status: false, msg: "invalid request put valid data in body" })
@@ -99,7 +111,7 @@ const updateBlog = async function (req, res) {
         if (tags.length === 0) { return res.status(400).send({ status: false, msg: "Provide tag" }) }
         if (subcategory.length === 0) { return res.status(400).send({ status: false, msg: " provide subcategory " }) }
 
-        let updatedata = await blogModel.findOneAndUpdate({ _id: blogId }, { published: true, publishedAt: new Date() }, data, { new: true })
+        let updatedata = await blogModel.findOneAndUpdate({ _id: blogId }, { published: true, publishedAt: new Date() , data}, { new: true })
         return res.status(200).send({ status: true, data: updatedata })
     }
 
