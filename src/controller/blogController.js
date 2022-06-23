@@ -15,7 +15,7 @@ const createBlog = async function (req, res) {
         if (!validator.isValid(authorId)) { return res.status(400).send({ status: false, msg: "autherId required" }) }
         if (!validator.isValid(category)) { return res.status(400).send({ status: false, msg: "category required" }) }
         if (!validator.isValidObjId(authorId)) { return res.status(400).send({ status: false, msg: "AutherId invalid" }) }
-
+        
         const findAuthor = await authorModel.findById(id)
         if (!findAuthor) {
             return res.status(400).send("Auther not exists")
