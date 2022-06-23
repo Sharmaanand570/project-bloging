@@ -128,11 +128,11 @@ const deleteBloggByQueryParams = async function (req, res) {
             const bloggDetails = await blogModel.find({
                 category,
                 authorId,
-                tags: { $elemMatch: { $eq: tagsData } },
+                tags: { $in:tagsData },
                 isPublished,
                 isDeleted: false,
                 subcategory: {
-                    $elemMatch: { $eq: subcategoryData },
+                    $in: subcategoryData,
                 }
             })
             if (Object.keys(bloggDetails).length === 0) {
@@ -142,9 +142,9 @@ const deleteBloggByQueryParams = async function (req, res) {
                 await blogModel.updateMany({
                     category,
                     authorId,
-                    tags: { $elemMatch: { $eq: tagsData } },
+                    tags: { $in:tagsData  },
                     isPublished,
-                    subcategory: { $elemMatch: { $eq: subcategoryData } }
+                    subcategory: { $in:subcategoryData }
                 },
                     { isDeleted: true, deletedAt: new Date() })
                 res.status(200).send()
