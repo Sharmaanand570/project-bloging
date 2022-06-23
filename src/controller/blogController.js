@@ -70,24 +70,29 @@ const updateBlog = async function (req, res) {
         const blogId = req.params.blogId
         const data = req.body
 
-        const { title, body, tags, category,subcategory } = data
-
-        if (!validator.isValid(title)) { return res.status(400).send({ status: false, msg: "title required" }) }
-        if (!validator.isValid(body)) { return res.status(400).send({ status: false, msg: "body Request" }) }
-        if (!validator.isValid(tags)) { return res.status(400).send({ status: false, msg: "tags required" }) }
-        if (!validator.isValid(category)) { return res.status(400).send({ status: false, msg: "category required" }) }
-        if (!validator.isValid(subcategory)) { return res.status(400).send({ status: false, msg: "subcategory required" }) }
+        const { title, body, tags, category, subcategory } = data
+        console.log(title)
+        if (title) { if (!validator.isValidKey(title)) { return res.status(400).send({ status: false, msg: "title required" }) } }
+        if (body) { if (!validator.isValidKey(body)) { return res.status(400).send({ status: false, msg: "body Request" }) } }
+        if (!validator.isValidArray(tags)) { return res.status(400).send({ status: false, msg: "tags elements required" }) }
+        if (tags) { if (!validator.isValidKey(tags)) { return res.status(400).send({ status: false, msg: "tags Required" }) } }
+        if (category) { if (!validator.isValidKey(category)) { return res.status(400).send({ status: false, msg: "category Required" }) } }
+        if (!validator.isValidArray(subcategory)) { return res.status(400).send({ status: false, msg: "subcategory required" }) }
         if (!validator.isValidReqBody(data)) { return res.status(400).send({ status: false, msg: "invalid request put valid data in body" }) }
         if (!validator.isValidObjId(blogId)) { return res.status(400).send({ status: false, msg: "blogId is invalid" }) }
-        if(tags.filter(function(e){return e=null})){ return res.status(400).send({status:false,msg:"Provide tag"})}
-         let updatedata = await blogModel.findOneAndUpdate({ _id: blogId }, data, { new: true })
-         return res.status(200).send({ status: true, data: updatedata })
-        }
-        
-       
-      
-          // if (!isPublished==true) { return res.status(400).send({ status: false, msg: "Not published " }
-         
+
+
+        if (tags.length === 0) { return res.status(400).send({ status: false, msg: "Provide tag" }) }
+        if (subcategory.length === 0) { return res.status(400).send({ status: false, msg: " provide subcategory " }) }
+
+        let updatedata = await blogModel.findOneAndUpdate({ _id: blogId }, { published: true,  publishedAt: new Date() } ,data, { new: true })
+        return res.status(200).send({ status: true, data: updatedata })
+    }
+
+
+
+
+
     catch (error) {
         return res.status(500).send({ status: false, msg: error.message })
     }
@@ -126,10 +131,10 @@ const deleteBlogByQueryParams = async function (req, res) {
         const { category, authorId, isPublished } = req.query
         const tagsData = req.query.tags
         const subcategoryData = req.query.subcategory
-        if(!mongoose.Types.ObjectId.isValid(authorId)){
-            res.status(400).send({status:false, msg:"Invalid Author Id"})
+        if (!mongoose.Types.ObjectId.isValid(authorId)) {
+            res.status(400).send({ status: false, msg: "Invalid Author Id" })
         }
-        if (category && authorId && tagsData && isPublished=="false" && subcategoryData) {
+        if (category && authorId && tagsData && isPublished == "false" && subcategoryData) {
             const bloggDetails = await blogModel.find({
                 category,
                 authorId,
