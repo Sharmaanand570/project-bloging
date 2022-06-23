@@ -9,9 +9,9 @@ const createBlog = async function (req, res) {
 
         let data = req.body
         let id = req.body.authorId
-        if (!validator.isValidReqBody(data)) { return res.status(400).send({ status: false, msg: "invalid request put valid data in body" })}
+        if (!validator.isValidReqBody(data)) { return res.status(400).send({ status: false, msg: "invalid request put valid data in body" }) }
         const { title, body, authorId, category } = data
-       
+
         if (!validator.isValid(title)) { return res.status(400).send({ status: false, msg: "title required" }) }
         if (!validator.isValid(body)) { return res.status(400).send({ status: false, msg: "body Request" }) }
         if (!validator.isValid(authorId)) { return res.status(400).send({ status: false, msg: "autherId required" }) }
@@ -26,7 +26,7 @@ const createBlog = async function (req, res) {
         return res.status(201).send({ status: true, msg: "Blog created succesfully", saveData })
 
 
-} catch (error) {
+    } catch (error) {
         return res.status(500).send({ status: false, msg: error.message })
     }
 
