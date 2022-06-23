@@ -5,8 +5,6 @@ const validator = require('../validator/validator')
 
 const createBlog = async function (req, res) {
     try {
-
-
         let data = req.body
         let id = req.body.authorId
         if (!validator.isValidReqBody(data)) { return res.status(400).send({ status: false, msg: "invalid request put valid data in body" }) }
@@ -123,7 +121,10 @@ const deleteBloggByQueryParams = async function (req, res) {
         const { category, authorId, isPublished } = req.query
         const tagsData = req.query.tags
         const subcategoryData = req.query.subcategory
-        if (category && authorId && tagsData && isPublished && subcategoryData) {
+        if(!mongoose.Types.ObjectId.isValid(authorId)){
+            res.status(400).send({status:false, msg:"Invalid Author Id"})
+        }
+        if (category && authorId && tagsData && isPublished=="false" && subcategoryData) {
             const bloggDetails = await blogModel.find({
                 category,
                 authorId,
