@@ -38,4 +38,9 @@ const createAuthor = async function (req, res) {
     }
 }
 
+const authorLogin = async function(req, res){
+
+}
+
+module.exports.authorLogin = authorLogin
 module.exports.createAuthor = createAuthor
