@@ -9,9 +9,9 @@ const createBlog = async function (req, res) {
 
         let data = req.body
         let id = req.body.authorId
-        if (!validator.isValidReqBody(data)) { return res.status(400).send({ status: false, msg: "invalid request put valid data in body" })}
+        if (!validator.isValidReqBody(data)) { return res.status(400).send({ status: false, msg: "invalid request put valid data in body" }) }
         const { title, body, authorId, category } = data
-       
+
         if (!validator.isValid(title)) { return res.status(400).send({ status: false, msg: "title required" }) }
         if (!validator.isValid(body)) { return res.status(400).send({ status: false, msg: "body Request" }) }
         if (!validator.isValid(authorId)) { return res.status(400).send({ status: false, msg: "autherId required" }) }
@@ -26,7 +26,7 @@ const createBlog = async function (req, res) {
         return res.status(201).send({ status: true, msg: "Blog created succesfully", saveData })
 
 
-} catch (error) {
+    } catch (error) {
         return res.status(500).send({ status: false, msg: error.message })
     }
 }
@@ -40,12 +40,12 @@ const getBlogg = async function (req, res) {
         console.log(blogs)
         let authorId = req.query.authorId;
         const { category, tag, subcategory } = req.query
-        
-        let temp =[]
-        for( let i=0 ; i<blogs.length ; i++) {
-            let x=blogs[i];
-             
-            if( (x.authorId.toString() === authorId) ) {
+
+        let temp = []
+        for (let i = 0; i < blogs.length; i++) {
+            let x = blogs[i];
+
+            if ((x.authorId.toString() === authorId)) {
                 temp.push(x)
             }
             if ((x.category === category)) {
@@ -74,13 +74,8 @@ const updateBlogg = async function (req, res) {
         if (mongoose.Types.ObjectId.isValid(blogId)) {
             const bloggDetails = await blogModel.findById(blogId)
             if (bloggDetails && bloggDetails.isDeleted == false) {
-                try {
-                    let Updatedata = await blogModel.findOneAndUpdate({ _id: blogId }, data, { new: true })
-                    return res.status(200).send({ status: true, data: Updatedata })
-                }
-                catch (error) {
-                    res.staus(400).send({ status: false, msg: error.message })
-                }
+                let updatedata = await blogModel.findOneAndUpdate({ _id: blogId }, data, { new: true })
+                return res.status(200).send({ status: true, data: updatedata })
             }
             else {
                 res.send({ status: false, msg: "Data is not avaliable" })

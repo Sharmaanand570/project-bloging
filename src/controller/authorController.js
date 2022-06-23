@@ -1,4 +1,4 @@
-const AuthorModel = require("../models/authorModel.js")
+const authorModel = require("../models/authorModel.js")
 
 const createAuthor = async function (req, res) {
     try {
@@ -11,7 +11,7 @@ const createAuthor = async function (req, res) {
             return res.status(400).send({ status: false, msg: "key value is not present" })
         }
 
-        let checkMail = await AuthorModel.findOne({ email: email });
+        let checkMail = await authorModel.findOne({ email: email });
         if (checkMail) {
             return res.status(400).send({ status: false, msg: " duplicate email" })
         }
@@ -23,7 +23,7 @@ const createAuthor = async function (req, res) {
             if (typeof (lname) === "string") {
                 if (typeof (email) === "string") {
                     if (typeof (password) === "string") {
-                        let savedAuthorData = await AuthorModel.create(authorData);
+                        let savedAuthorData = await authorModel.create(authorData);
                         if (!savedAuthorData) {
                             res.status(400).send({ status: false, msg: "cannot create data" })
                         }
