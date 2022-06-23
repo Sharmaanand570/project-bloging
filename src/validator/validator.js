@@ -7,16 +7,9 @@ const isValid = (value)=>{
     return true;
   }
 
-
-
-
-
 const isValidReqBody  = function (reqBody) {
     return Object.keys(reqBody).length > 0
 }
-
-
-
 
 const isValidObjId = function (ObjectId) {
     return mongoose.Types.ObjectId.isValid(ObjectId)

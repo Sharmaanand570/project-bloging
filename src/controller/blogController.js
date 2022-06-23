@@ -29,22 +29,7 @@ const createBlog = async function (req, res) {
     } catch (error) {
         return res.status(500).send({ status: false, msg: error.message })
     }
-
-
-
 }
-
-
-
-
-
-
-
-
-
-
-
-
 
 const getBlogg = async function (req, res) {
     try {
@@ -52,15 +37,16 @@ const getBlogg = async function (req, res) {
         if (blogs.length === 0) {
             return res.status(404).send({ status: false, msg: "blogs not found" });
         }
-        let author_id = req.query.authorId
+        console.log(blogs)
+        let authorId = req.query.authorId;
         const { category, tag, subcategory } = req.query
+
         let temp = []
         for (let i = 0; i < blogs.length; i++) {
             let x = blogs[i];
 
-            if ((x.authorId.toString() === author_id)) {
+            if ((x.authorId.toString() === authorId)) {
                 temp.push(x)
-                console.log(x.authorId)
             }
             if ((x.category === category)) {
                 temp.push(x)
@@ -88,13 +74,8 @@ const updateBlogg = async function (req, res) {
         if (mongoose.Types.ObjectId.isValid(blogId)) {
             const bloggDetails = await blogModel.findById(blogId)
             if (bloggDetails && bloggDetails.isDeleted == false) {
-                try {
-                    let Updatedata = await blogModel.findOneAndUpdate({ _id: blogId }, data, { new: true })
-                    return res.status(200).send({ status: true, data: Updatedata })
-                }
-                catch (error) {
-                    res.staus(400).send({ status: false, msg: error.message })
-                }
+                let updatedata = await blogModel.findOneAndUpdate({ _id: blogId }, data, { new: true })
+                return res.status(200).send({ status: true, data: updatedata })
             }
             else {
                 res.send({ status: false, msg: "Data is not avaliable" })
@@ -123,13 +104,8 @@ const deleteBloggById = async function (req, res) {
                     res.status(400).send({ status: false, msg: "Data Already Deleted" })
                 }
                 else {
-                    try {
-                        await blogModel.findByIdAndUpdate({ _id: bloggId }, { isDeleted: true, deletedAt: new Date() })
-                        res.status(200).send()
-                    }
-                    catch (error) {
-                        res.status(400).send({ status: false, msg: error.message })
-                    }
+                    await blogModel.findByIdAndUpdate({ _id: bloggId }, { isDeleted: true, deletedAt: new Date() })
+                    res.status(200).send()
                 }
             }
         }
@@ -162,20 +138,15 @@ const deleteBloggByQueryParams = async function (req, res) {
                 res.status(404).send({ status: false, msg: "Blog Data is Not Available" })
             }
             else {
-                try {
-                    await blogModel.updateMany({
-                        category,
-                        authorId,
-                        tags: { $elemMatch: { $eq: tagsData } },
-                        isPublished,
-                        subcategory: { $elemMatch: { $eq: subcategoryData } }
-                    },
-                        { isDeleted: true, deletedAt: new Date() })
-                    res.status(200).send()
-                }
-                catch (error) {
-                    res.status(400).send({ status: false, msg: error.message })
-                }
+                await blogModel.updateMany({
+                    category,
+                    authorId,
+                    tags: { $elemMatch: { $eq: tagsData } },
+                    isPublished,
+                    subcategory: { $elemMatch: { $eq: subcategoryData } }
+                },
+                    { isDeleted: true, deletedAt: new Date() })
+                res.status(200).send()
             }
         }
         else {
