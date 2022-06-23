@@ -79,14 +79,16 @@ const updateBlog = async function (req, res) {
             if (!validator.isValidKey(body)) { return res.status(400).send({ status: false, msg: "body Request" }) }
         }
         if (tags) {
-        if (!validator.isValidArray(tags)) { return res.status(400).send({ status: false, msg: "tags elements required" }) } }
-        
+            if (!validator.isValidArray(tags)) { return res.status(400).send({ status: false, msg: "tags elements required" }) }
+        }
+
         if (category) {
             if (!validator.isValidKey(category)) { return res.status(400).send({ status: false, msg: "category Required" }) }
         }
         if (subcategory) {
-        if (!validator.isValidArray(subcategory)) {
-            return res.status(400).send({ status: false, msg: "subcategory required" })}
+            if (!validator.isValidArray(subcategory)) {
+                return res.status(400).send({ status: false, msg: "subcategory required" })
+            }
         }
         if (!validator.isValidReqBody(data)) {
             return res.status(400).send({ status: false, msg: "invalid request put valid data in body" })
@@ -142,33 +144,47 @@ const deleteBlogById = async function (req, res) {
 
 const deleteBlogByQueryParams = async function (req, res) {
     try {
-        const { category, authorId, isPublished } = req.query
+        const data = req.query
+        const { category, authorId, isPublished } = data
         const tagsData = req.query.tags
         const subcategoryData = req.query.subcategory
-        if (!mongoose.Types.ObjectId.isValid(authorId)) {
-            res.status(400).send({ status: false, msg: "Invalid Author Id" })
-        }
-        if (category && authorId && tagsData && isPublished == "false" && subcategoryData) {
-            const bloggDetails = await blogModel.find({
-                category,
-                authorId,
-                tags: { $in: tagsData },
-                isPublished,
-                isDeleted: false,
-                subcategory: {
-                    $in: subcategoryData,
+        if (!Object.keys(data).length == 0) {
+            if(authorId || authorId===""){
+                if(!mongoose.Types.ObjectId.isValid(authorId)){
+                    return  res.status(400).send({ status: false, msg: "invalid AuthorID"})
                 }
+            }
+            const bloggDetails = await blogModel.find({
+                $or: [{
+                    category
+                },
+                { authorId },
+                { tags: { $in: tagsData } },
+                { isPublished },
+                { isDeleted: false },
+                {
+                    subcategory: {
+                        $in: subcategoryData,
+                    }
+                }]
             })
             if (Object.keys(bloggDetails).length === 0) {
                 res.status(404).send({ status: false, msg: "Blog Data is Not Available" })
             }
             else {
                 await blogModel.updateMany({
-                    category,
-                    authorId,
-                    tags: { $in: tagsData },
-                    isPublished,
-                    subcategory: { $in: subcategoryData }
+                    $or: [{
+                        category
+                    },
+                    { authorId },
+                    { tags: { $in: tagsData } },
+                    { isPublished },
+                    { isDeleted: false },
+                    {
+                        subcategory: {
+                            $in: subcategoryData,
+                        }
+                    }]
                 },
                     { isDeleted: true, deletedAt: new Date() })
                 res.status(200).send()
