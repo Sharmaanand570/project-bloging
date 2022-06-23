@@ -7,24 +7,76 @@ const createBlog = async function (req, res) {
     try {
         let data = req.body
         let id = req.body.authorId
-        if (!validator.isValidReqBody(data)) { return res.status(400).send({ status: false, msg: "invalid request put valid data in body" }) }
-        const { title, body, authorId, category } = data
 
-        if (!validator.isValid(title)) { return res.status(400).send({ status: false, msg: "title required" }) }
-        if (!validator.isValid(body)) { return res.status(400).send({ status: false, msg: "body Request" }) }
-        if (!validator.isValid(authorId)) { return res.status(400).send({ status: false, msg: "autherId required" }) }
-        if (!validator.isValid(category)) { return res.status(400).send({ status: false, msg: "category required" }) }
-        if (!validator.isValidObjId(authorId)) { return res.status(400).send({ status: false, msg: "AutherId invalid" }) }
+
+        if (!validator.isValidReqBody(data)) {
+
+
+            return res.status(400).send({ status: false, msg: "invalid request put valid data in body" })
+        }
+
+
+        const { title, body, authorId, category, isPublished, tags, subcategory } = data
+
+
+
+        if (!validator.isValidArray(tags)) {
+
+            return res.status(400).send({ status: false, msg: "tags must be a character in aaray" })
+
+        }
+
+        if (!validator.isValidArray(subcategory)) {
+            return res.status(400).send({ status: false, msg: "subcategory must be a character in aaray" })
+
+        }
+
+
+
+        if (!validator.isValid(title)) {
+            return res.status(400).send({ status: false, msg: "title required" })
+        }
+
+
+        if (!validator.isValid(body)) {
+            return res.status(400).send({ status: false, msg: "body Required" })
+        }
+
+
+        if (!validator.isValid(authorId)) {
+            return res.status(400).send({ status: false, msg: "authorId required" })
+        }
+
+
+        if (!validator.isValid(category)) {
+            return res.status(400).send({ status: false, msg: "category required" })
+
+        }
+
+
+        if (isPublished !== true) {
+
+            return res.status(400).send({ status: false, msg: "not Published " })
+        }
+
+        if (!validator.isValidObjId(authorId)) {
+            return res.status(400).send({ status: false, msg: "AuthorId invalid" })
+        }
 
         const findAuthor = await authorModel.findById(id)
+
         if (!findAuthor) {
+
             return res.status(400).send("Auther not exists")
         }
+
         let saveData = await blogModel.create(data)
+
         return res.status(201).send({ status: true, msg: "Blog created succesfully", saveData })
 
 
-    } catch (error) {
+    }
+    catch (error) {
         return res.status(500).send({ status: false, msg: error.message })
     }
 }
@@ -72,43 +124,50 @@ const updateBlog = async function (req, res) {
 
         const { title, body, tags, category, subcategory } = data
 
-        if  ( !validator.isValidObjId( blogId ) ) {
-           
-           
+
+        if (!validator.isValidObjId(blogId)) {
+
+
             return res.status(400).send({ status: false, msg: "blogId is invalid" })
         }
 
         if (!validator.isValidReqBody(data)) {
-           
+
             return res.status(400).send({ status: false, msg: "invalid request put valid data in body" })
         }
 
+
+
         if (title) {
-            if (!validator.isValidKey(title)) { return res.status(400).send({ status: false, msg: "title required" }) }
+            if (!validator.isValid(title)) { return res.status(400).send({ status: false, msg: "title required" }) }
         }
         if (body) {
-            if (!validator.isValidKey(body)) { return res.status(400).send({ status: false, msg: "body Request" }) }
+            if (!validator.isValid(body)) { return res.status(400).send({ status: false, msg: "body Request" }) }
         }
         if (tags) {
-        if (!validator.isValidArray(tags)) { return res.status(400).send({ status: false, msg: "tags elements required" }) } }
+
+
+            if (!validator.isValidArray(tags)) { return res.status(400).send({ status: false, msg: "tags elements required" }) }
+        }
+
 
         if (category) {
-            if (!validator.isValidKey(category)) { return res.status(400).send({ status: false, msg: "category Required" }) }
+            if (!validator.isValid(category)) { return res.status(400).send({ status: false, msg: "category Required" }) }
         }
         if (subcategory) {
-        if (!validator.isValidArray(subcategory)) {
-            return res.status(400).send({ status: false, msg: "subcategory required" })}
+            if (!validator.isValidArray(subcategory)) {
+                return res.status(400).send({ status: false, msg: "subcategory required" })
+            }
         }
-      
-       
+
+
 
 
         if (tags.length === 0) { return res.status(400).send({ status: false, msg: "Provide tag" }) }
         if (subcategory.length === 0) { return res.status(400).send({ status: false, msg: " provide subcategory " }) }
 
 
-
-        let updatedata = await blogModel.findOneAndUpdate({ _id: blogId }, { published: true, publishedAt: new Date() , data}, { new: true })
+        let updatedata = await blogModel.findOneAndUpdate({ _id: blogId }, { published: true, publishedAt: new Date(), data }, { new: true })
 
         return res.status(200).send({ status: true, data: updatedata })
     }
