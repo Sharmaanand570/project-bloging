@@ -6,7 +6,7 @@ const createAuthor = async function (req, res) {
         let authorData = req.body;
 
         const { fname, lname, title, email, password } = authorData;
-
+         
         if (!(fname && lname && title && email && password)) {
             return res.status(400).send({ status: false, msg: "key value is not present" })
         }

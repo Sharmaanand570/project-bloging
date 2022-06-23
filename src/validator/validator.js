@@ -13,9 +13,9 @@ const isValid = (value) => {
 
 const isValidKey = (value) => {
 
-    if (typeof value === "string") { return true }
+   
     if (typeof value === "string" && value.trim().length === 0) return false;
-
+     if (typeof value === "string") { return true }
     else {
         return false
     }

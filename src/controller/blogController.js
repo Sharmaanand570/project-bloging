@@ -71,38 +71,45 @@ const updateBlog = async function (req, res) {
         const data = req.body
 
         const { title, body, tags, category, subcategory } = data
-        
-        if (!validator.isValidReqBody(data)) { return res.status(400).send({ status: false, msg: "invalid request put valid data in body" }) }
-     
+
+        if  ( !validator.isValidObjId( blogId ) ) {
+           
+           
+            return res.status(400).send({ status: false, msg: "blogId is invalid" })
+        }
+
+        if (!validator.isValidReqBody(data)) {
+           
+            return res.status(400).send({ status: false, msg: "invalid request put valid data in body" })
+        }
+
+        if (title) {
+            if (!validator.isValidKey(title)) { return res.status(400).send({ status: false, msg: "title required" }) }
+        }
+        if (body) {
+            if (!validator.isValidKey(body)) { return res.status(400).send({ status: false, msg: "body Request" }) }
+        }
+        if (tags) {
+        if (!validator.isValidArray(tags)) { return res.status(400).send({ status: false, msg: "tags elements required" }) } }
+
+        if (category) {
+            if (!validator.isValidKey(category)) { return res.status(400).send({ status: false, msg: "category Required" }) }
+        }
+        if (subcategory) {
+        if (!validator.isValidArray(subcategory)) {
+            return res.status(400).send({ status: false, msg: "subcategory required" })}
+        }
+      
        
-        if (title) { if (!validator.isValidKey(title)) { return res.status(400).send({ status: false, msg: "title required" }) } }
-
-
-
-        if (body) { if (!validator.isValidKey(body)) { return res.status(400).send({ status: false, msg: "body Request" }) } }
-
-
-        if (!validator.isValidArray(tags)) { return res.status(400).send({ status: false, msg: "tags elements required" }) }
-
-      //  if (tags) { if (!validator.isValidKey(tags)) { return res.status(400).send({ status: false, msg: "tags Required" }) } }
-
-        if (category) { if (!validator.isValidKey(category)) { return res.status(400).send({ status: false, msg: "category Required" }) } }
-
-
-        if (!validator.isValidArray(subcategory)) { return res.status(400).send({ status: false, msg: "subcategory required" }) }
-
-        if (!validator.isValidReqBody(data)) { return res.status(400).send({ status: false, msg: "invalid request put valid data in body" }) }
-
-        if (!validator.isValidObjId(blogId)) { return res.status(400).send({ status: false, msg: "blogId is invalid" }) }
-
-
 
 
         if (tags.length === 0) { return res.status(400).send({ status: false, msg: "Provide tag" }) }
         if (subcategory.length === 0) { return res.status(400).send({ status: false, msg: " provide subcategory " }) }
 
 
+
         let updatedata = await blogModel.findOneAndUpdate({ _id: blogId }, data, { published: true, publishedAt: new Date() }, { new: true })
+
         return res.status(200).send({ status: true, data: updatedata })
     }
 
