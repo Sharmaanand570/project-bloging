@@ -1,10 +1,5 @@
 const authorModel = require("../models/authorModel.js")
 
-const validString = function(valid){
-    if (typeof (valid) === "string" && valid.trim().length !== 0) return true
-    return false
-}
-
 const createAuthor = async function (req, res) {
     try {
 
@@ -45,13 +40,13 @@ const createAuthor = async function (req, res) {
 
 const authorLogin = async function (req, res) {
     try {
-        let userName = req.body.emailId;
+        let userName = req.body.email;
         let password = req.body.password;
-        let data = await authorModel.findOne({ emailId: userName, password: password });
+        let data = await authorModel.findOne({ email: userName, password: password });
         if (!data)
             return res.status(400).send({
                 status: false,
-                msg: "username or the password is not corerct",
+                msg: "username or the password is not correct",
             })
         let token = jwt.sign(
             {
@@ -65,8 +60,8 @@ const authorLogin = async function (req, res) {
         res.status(200).setHeader("x-auth-token", token);
         res.status(200).send({ status: true, token: token });
     }
-    catch (err) {
-        res.status(500).send({ msg: "Error", error: err.message })
+    catch (error) {
+        res.status(500).send({ status:false , msg: error.message })
     }
 }
 

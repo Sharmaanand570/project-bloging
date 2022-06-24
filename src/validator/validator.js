@@ -1,6 +1,5 @@
 const mongoose = require('mongoose')
 
-
 const isValid = (value) => {
     if (typeof value === "Undefined" || value === null) return false
     if (typeof value === "string" && value.trim().length === 0) return false;
@@ -10,18 +9,13 @@ const isValid = (value) => {
     }
 }
 
-
 const isValidKey = (value) => {
-
-   
     if (typeof value === "string" && value.trim().length === 0) return false;
      if (typeof value === "string") { return true }
     else {
         return false
     }
 }
-
-
 
 const isValidArray = (value) => {
     if (Array.isArray(value)) { return true }
