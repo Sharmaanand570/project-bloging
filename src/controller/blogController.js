@@ -7,6 +7,9 @@ const createBlog = async function (req, res) {
     try {
         let data = req.body
         let id = req.body.authorId
+
+        // validation start
+        
         if (!validator.isValidReqBody(data)) {
             return res.status(400).send({ status: false, msg: "invalid request put valid data in body" })
         }
@@ -27,9 +30,7 @@ const createBlog = async function (req, res) {
         if (!validator.isValid(body)) {
             return res.status(400).send({ status: false, msg: "body Required" })
         }
-        if (!validator.isValid(authorId)) {
-            return res.status(400).send({ status: false, msg: "authorId required" })
-        }
+      
         if (!validator.isValid(category)) {
             return res.status(400).send({ status: false, msg: "category required" })
 
@@ -38,7 +39,7 @@ const createBlog = async function (req, res) {
       
 
         if (!validator.isValidObjId(authorId)) {
-            return res.status(400).send({ status: false, msg: "AuthorId invalid" })
+            return res.status(400).send({ status: false, msg: "AuthorId invalid  or not present " })
         }
         const findAuthor = await authorModel.findById(id)
         if (!findAuthor) {
@@ -46,11 +47,14 @@ const createBlog = async function (req, res) {
         }
         let saveData = await blogModel.create(data)
         return res.status(201).send({ status: true, msg: "Blog created succesfully", saveData })
+         
+        //validation End
     }
     catch (error) {
         return res.status(500).send({ status: false, msg: error.message })
     }
 }
+
 
 const getBlog = async function (req, res) {
     try {
