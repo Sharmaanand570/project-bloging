@@ -8,7 +8,7 @@ let authenticate = async function (req, res, next) {
         }
         else {
             try {
-                let decodedToken = jwt.verify(token, "functionup-Project-1-Blogging-Room-18")
+                jwt.verify(token, "functionup-Project-1-Blogging-Room-18")
                 next()
             }
             catch (error) {
@@ -23,21 +23,20 @@ let authenticate = async function (req, res, next) {
 
 let authorise = async function (req, res, next) {
     try {
-        let authorIdParams = req.params.authorId
-        let authorIdQuery = req.query.authorId
-        let authorIdBody = req.body.authorId
-        let token = req.headers["x-auth-token"]
-        try {
-            let decodedToken = jwt.verify(token, "functionup-Project-1-Blogging-Room-18")
-            if (authorIdParams === decodedToken.authorId || authorIdQuery === decodedToken.authorId || authorIdBody === decodedToken.authorId) {
-                next()
-            }
-            else {
-                res.status(401).send("User not valid")
-            }
+        const authorIdParams = req.params.authorId
+        const authorIdQuery = req.query.authorId
+        const authorIdBody = req.body.authorId
+        const authorIdHeaders = req.headers.authorId
+        const token = req.headers["x-auth-token"]
+        let decodedToken = jwt.verify(token, "functionup-Project-1-Blogging-Room-18")
+        if (authorIdParams == decodedToken.authorId ||
+            authorIdQuery == decodedToken.authorId ||
+            authorIdBody == decodedToken.authorId ||
+            authorIdHeaders == decodedToken.authorId) {
+            next()
         }
-        catch (error) {
-            res.status(403).send({ status: false, msg: "Invalid token" })
+        else {
+            res.status(401).send("User not valid")
         }
     }
     catch (error) {

@@ -11,7 +11,7 @@ const createBlog = async function (req, res) {
             return res.status(400).send({ status: false, msg: "invalid request put valid data in body" })
         }
         const { title, body, authorId, category, isPublished, tags, subcategory } = data
-        if (!validator.isValidArray(tags)) {
+        if (!validator.isValidArray(tags) && !validator.isValid(tags)) {
             return res.status(400).send({ status: false, msg: "tags must be a character in aaray" })
         }
         if (!validator.isValidArray(subcategory)) {
@@ -52,7 +52,7 @@ const createBlog = async function (req, res) {
 const getBlog = async function (req, res) {
     try {
         let blogs = await blogModel.find({ isDeleted: false, isPublished: true });
-        if (blogs.length === 0) {
+        if (blogs.length == 0) {
             return res.status(404).send({ status: false, msg: "blogs not found" });
         }
         console.log(blogs)
@@ -63,10 +63,10 @@ const getBlog = async function (req, res) {
         for (let i = 0; i < blogs.length; i++) {
             let x = blogs[i];
 
-            if ((x.authorId.toString() === authorId)) {
+            if ((x.authorId.toString() == authorId)) {
                 temp.push(x)
             }
-            if ((x.category === category)) {
+            if ((x.category == category)) {
                 temp.push(x)
             }
             if ((x.subcategory.includes(subcategory))) {
@@ -76,7 +76,7 @@ const getBlog = async function (req, res) {
                 temp.push(x)
             }
         }
-        if (temp.length === 0) {
+        if (temp.length == 0) {
             res.status(404).send({ status: false, msg: "data not found" })
         }
         else res.send({ status: true, Data: temp })
@@ -113,8 +113,8 @@ const updateBlog = async function (req, res) {
                 return res.status(400).send({ status: false, msg: "subcategory required" })
             }
         }
-        if (tags.length === 0) { return res.status(400).send({ status: false, msg: "Provide tag" }) }
-        if (subcategory.length === 0) { return res.status(400).send({ status: false, msg: " provide subcategory " }) }
+        if (tags.length == 0) { return res.status(400).send({ status: false, msg: "Provide tag" }) }
+        if (subcategory.length == 0) { return res.status(400).send({ status: false, msg: " provide subcategory " }) }
         let updatedata = await blogModel.findOneAndUpdate({ _id: blogId }, { published: true, publishedAt: new Date(), data }, { new: true })
         return res.status(200).send({ status: true, data: updatedata })
     }
@@ -133,7 +133,7 @@ const deleteBlogById = async function (req, res) {
                 res.status(404).send({ status: false, msg: "Blogg Data is Not Available" })
             }
             else {
-                if (bloggDetails.isDeleted === true) {
+                if (bloggDetails.isDeleted == true) {
                     res.status(400).send({ status: false, msg: "Data Already Deleted" })
                 }
                 else {
@@ -186,7 +186,7 @@ const deleteBlogByQueryParams = async function (req, res) {
                 }],
                 isDeleted: false
             })
-            if (Object.keys(bloggDetails).length === 0) {
+            if (Object.keys(bloggDetails).length == 0) {
                 res.status(404).send({ status: false, msg: "Blog Data is Not Available" })
             }
             else {

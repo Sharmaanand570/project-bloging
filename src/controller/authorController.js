@@ -5,6 +5,7 @@ const validString = function(valid){
     return false
 }
 
+
 const createAuthor = async function (req, res) {
     try {
 
@@ -21,7 +22,7 @@ const createAuthor = async function (req, res) {
             return res.status(409).send({ status: false, msg: " duplicate email" })
         }
         if ((title !== "Mr") && (title !== "Mrs") && (title !== "Miss")) {
-            res.status(400).send({ status: false, msg: "please enter correct title eg Mr,Mrs,Miss" })
+           return  res.status(400).send({ status: false, msg: "please enter correct title eg Mr,Mrs,Miss" })
         }
 
         if (typeof (fname) === "string" && fname.trim().length !== 0) {
@@ -39,7 +40,7 @@ const createAuthor = async function (req, res) {
         } else { return res.status(400).send({ status: false, data: "fname is invalid" }) }
 
     } catch (err) {
-        res.status(500).send({ status: false, error: err.message })
+       return res.status(500).send({ status: false, error: err.message })
     }
 }
 
@@ -51,7 +52,7 @@ const authorLogin = async function (req, res) {
         if (!data)
             return res.status(400).send({
                 status: false,
-                msg: "username or the password is not corerct",
+                msg: "username or the password is not correct",
             })
         let token = jwt.sign(
             {
@@ -65,8 +66,8 @@ const authorLogin = async function (req, res) {
         res.status(200).setHeader("x-auth-token", token);
         res.status(200).send({ status: true, token: token });
     }
-    catch (err) {
-        res.status(500).send({ msg: "Error", error: err.message })
+    catch (error) {
+      return  res.status(500).send({ status:false , msg: error.message })
     }
 }
 
