@@ -11,7 +11,7 @@ const createBlog = async function (req, res) {
             return res.status(400).send({ status: false, msg: "invalid request put valid data in body" })
         }
         const { title, body, authorId, category, isPublished, tags, subcategory } = data
-        if (!validator.isValidArray(tags)) {
+        if (!validator.isValidArray(tags) && !validator.isValid(tags)) {
             return res.status(400).send({ status: false, msg: "tags must be a character in aaray" })
         }
         if (!validator.isValidArray(subcategory)) {

@@ -17,7 +17,7 @@ const createAuthor = async function (req, res) {
             return res.status(409).send({ status: false, msg: " duplicate email" })
         }
         if ((title !== "Mr") && (title !== "Mrs") && (title !== "Miss")) {
-            res.status(400).send({ status: false, msg: "please enter correct title eg Mr,Mrs,Miss" })
+           return  res.status(400).send({ status: false, msg: "please enter correct title eg Mr,Mrs,Miss" })
         }
 
         if (typeof (fname) === "string" && fname.trim().length !== 0) {
@@ -35,7 +35,7 @@ const createAuthor = async function (req, res) {
         } else { return res.status(400).send({ status: false, data: "fname is invalid" }) }
 
     } catch (err) {
-        res.status(500).send({ status: false, error: err.message })
+       return res.status(500).send({ status: false, error: err.message })
     }
 }
 
