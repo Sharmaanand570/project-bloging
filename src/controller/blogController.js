@@ -30,10 +30,7 @@ const createBlog = async function (req, res) {
             return res.status(400).send({ status: false, msg: "category required" })
 
         }
-        if (isPublished !== true) {
-
-            return res.status(400).send({ status: false, msg: "not Published " })
-        }
+      
         if (!validator.isValidObjId(authorId)) {
             return res.status(400).send({ status: false, msg: "AuthorId invalid" })
         }
