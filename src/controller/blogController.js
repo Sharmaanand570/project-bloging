@@ -190,22 +190,15 @@ const deleteBlogByQueryParams = async function (req, res) {
                 res.status(404).send({ status: false, msg: "Blog Data is Not Available" })
             }
             else {
-                await blogModel.updateMany({
-                    $or: [{
-                        category
-                    },
-                    { authorId },
-                    { tags: { $in: tagsData } },
-                    { isPublished: isPublishedData },
-                    {
-                        subcategory: {
-                            $in: subcategoryData,
-                        }
-                    }],
-                    isDeleted: false
-                },
-                    { isDeleted: true, deletedAt: new Date() })
-                res.status(200).send()
+                const token = req.headers["x-auth-token"]
+                let decodedToken = jwt.verify(token, "functionup-Project-1-Blogging-Room-18")
+                for (let i = 0; i < bloggDetails.length; i++) {
+                    if (decodedToken.authorId == bloggDetails[i].authorId) {
+                        await blogModel.findByIdAndUpdate({ authorId: bloggDetails[i].authorId },
+                            { isDeleted: true, deletedAt: new Date() })
+                    }
+                }
+                return res.status(200).send()
             }
         }
         else {
