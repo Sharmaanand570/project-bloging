@@ -15,7 +15,7 @@ router.put('/blogs/:blogId', blogController.updateBlog)
 
 router.delete('/blogs/:blogId',auth.authenticate, auth.authorise, blogController.deleteBlogById)
 
-router.delete('/blogs',auth.authenticate, auth.authorise, blogController.deleteBlogByQueryParams)
+router.delete('/blogs', blogController.deleteBlogByQueryParams)
 
 router.post('/login', authorController.authorLogin)
 

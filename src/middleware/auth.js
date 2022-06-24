@@ -1,5 +1,4 @@
 const jwt = require("jsonwebtoken")
-const authorModel = require("../models/authorModel")
 
 let authenticate = async function (req, res, next) {
     try {
@@ -8,12 +7,12 @@ let authenticate = async function (req, res, next) {
             res.status(404).send({ status: false, msg: "token must be present" })
         }
         else {
-            let decodedToken = jwt.verify(token, "functionup-Project-1-Blogging-Room-18")
-            if (!decodedToken) {
-                res.status(400).send({ status: false, msg: "token is invalid" })
-            }
-            else {
+            try {
+                let decodedToken = jwt.verify(token, "functionup-Project-1-Blogging-Room-18")
                 next()
+            }
+            catch (error) {
+                res.status(403).send({ status: false, msg: "Invalid token" })
             }
         }
     }
@@ -28,12 +27,17 @@ let authorise = async function (req, res, next) {
         let authorIdQuery = req.query.authorId
         let authorIdBody = req.body.authorId
         let token = req.headers["x-auth-token"]
-        let decodedToken = jwt.verify(token, "functionup-Project-1-Blogging-Room-18")
-        if (authorIdParams === decodedToken.authorId || authorIdQuery === decodedToken.authorId || authorIdBody === decodedToken.authorId) {
-            next()
+        try {
+            let decodedToken = jwt.verify(token, "functionup-Project-1-Blogging-Room-18")
+            if (authorIdParams === decodedToken.authorId || authorIdQuery === decodedToken.authorId || authorIdBody === decodedToken.authorId) {
+                next()
+            }
+            else {
+                res.status(401).send("User not valid")
+            }
         }
-        else {
-            res.status(401).send("User not valid")
+        catch (error) {
+            res.status(403).send({ status: false, msg: "Invalid token" })
         }
     }
     catch (error) {
