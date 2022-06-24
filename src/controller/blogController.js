@@ -11,14 +11,18 @@ const createBlog = async function (req, res) {
             return res.status(400).send({ status: false, msg: "invalid request put valid data in body" })
         }
         const { title, body, authorId, category, isPublished, tags, subcategory } = data
-        if (!validator.isValidArray(tags)) {
-            return res.status(400).send({ status: false, msg: "tags must be a character in aaray" })
+        if (tags) {
+            if (!validator.isValidArray(tags)) {
+                return res.status(400).send({ status: false, msg: "tags must be  in array" })
+            }
         }
-        if (!validator.isValidArray(subcategory)) {
-            return res.status(400).send({ status: false, msg: "subcategory must be a character in aaray" })
+        if (subcategory) {
+            if (!validator.isValidArray(subcategory)) {
+                return res.status(400).send({ status: false, msg: "subcategory must be  in aaray" })
+            }
         }
         if (!validator.isValid(title)) {
-            return res.status(400).send({ status: false, msg: "title required" })
+            return res.status(400).send({ status: false, msg: "title required " })
         }
         if (!validator.isValid(body)) {
             return res.status(400).send({ status: false, msg: "body Required" })
@@ -30,10 +34,7 @@ const createBlog = async function (req, res) {
             return res.status(400).send({ status: false, msg: "category required" })
 
         }
-        if (isPublished !== true) {
-
-            return res.status(400).send({ status: false, msg: "not Published " })
-        }
+       
         if (!validator.isValidObjId(authorId)) {
             return res.status(400).send({ status: false, msg: "AuthorId invalid" })
         }
@@ -154,7 +155,7 @@ const deleteBlogById = async function (req, res) {
 const deleteBlogByQueryParams = async function (req, res) {
     try {
         const data = req.query
-        const { category, authorId} = data
+        const { category, authorId } = data
         let isPublishedData = data.isPublished
         const tagsData = data.tags
         const subcategoryData = data.subcategory
@@ -168,7 +169,7 @@ const deleteBlogByQueryParams = async function (req, res) {
                 if (isPublishedData == "false") {
                     isPublishedData == false
                 }
-                else{
+                else {
                     return res.status(400).send({ status: false, msg: "isPublished should be false" })
                 }
             }
@@ -178,7 +179,7 @@ const deleteBlogByQueryParams = async function (req, res) {
                 },
                 { authorId },
                 { tags: { $in: tagsData } },
-                {isPublished: isPublishedData },
+                { isPublished: isPublishedData },
                 {
                     subcategory: {
                         $in: subcategoryData,
