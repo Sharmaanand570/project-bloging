@@ -59,14 +59,14 @@ const authorLogin = async function (req, res) {
                 "functionup-Project-1-Blogging-Room-18"
             );
             res.status(200).setHeader("x-auth-token", token);
-            res.status(200).send({ status: true, token: token });
+            return res.status(200).send({ status: true, token: token });
         }
         else{
-            res.status(404).send({status:false, msg:"please enter email and password"})
+            return res.status(404).send({status:false, msg:"please enter email and password"})
         }
     }
     catch (error) {
-        res.status(500).send({ status: false, msg: error.message })
+        return res.status(500).send({ status: false, msg: error.message })
     }
 }
 

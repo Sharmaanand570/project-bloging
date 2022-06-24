@@ -13,16 +13,16 @@ const createBlog = async function (req, res) {
         const { title, body, authorId, category, isPublished, tags, subcategory } = data
         if (tags) {
             if (!validator.isValidArray(tags)) {
-                return res.status(400).send({ status: false, msg: "tags must be  in array" })
+                return res.status(400).send({ status: false, msg: "tags must be  array of string " })
             }
         }
         if (subcategory) {
             if (!validator.isValidArray(subcategory)) {
-                return res.status(400).send({ status: false, msg: "subcategory must be  in aaray" })
+                return res.status(400).send({ status: false, msg: "subcategory must be  array of string" })
             }
         }
         if (!validator.isValid(title)) {
-            return res.status(400).send({ status: false, msg: "title required " })
+            return res.status(400).send({ status: false, msg: " title required " })
         }
         if (!validator.isValid(body)) {
             return res.status(400).send({ status: false, msg: "body Required" })
