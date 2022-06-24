@@ -36,7 +36,7 @@ let authorise = async function (req, res, next) {
             next()
         }
         else {
-            res.status(401).send("User not valid")
+            res.status(401).send("Authorization failed")
         }
     }
     catch (error) {

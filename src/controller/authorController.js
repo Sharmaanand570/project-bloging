@@ -1,4 +1,5 @@
 const authorModel = require("../models/authorModel.js")
+const jwt = require("jsonwebtoken")
 
 const createAuthor = async function (req, res) {
     try {
@@ -40,28 +41,32 @@ const createAuthor = async function (req, res) {
 
 const authorLogin = async function (req, res) {
     try {
-        let userName = req.body.email;
-        let password = req.body.password;
-        let data = await authorModel.findOne({ email: userName, password: password });
-        if (!data)
-            return res.status(400).send({
-                status: false,
-                msg: "username or the password is not correct",
-            })
-        let token = jwt.sign(
-            {
-                authorId: data._id.toString(),
-                admin: true,
-                group: 18,
-                radonProject: 3
-            },
-            "functionup-Project-1-Blogging-Room-18"
-        );
-        res.status(200).setHeader("x-auth-token", token);
-        res.status(200).send({ status: true, token: token });
+        const authorData = req.body
+        if (!Object.keys(authorData).length==0) {
+            let data = await authorModel.findOne({ email: authorData.email, password: authorData.password });
+            if (!data)
+                return res.status(400).send({
+                    status: false,
+                    msg: "username or the password is not correct",
+                })
+            let token = jwt.sign(
+                {
+                    authorId: data._id.toString(),
+                    admin: true,
+                    group: 18,
+                    radonProject: 3
+                },
+                "functionup-Project-1-Blogging-Room-18"
+            );
+            res.status(200).setHeader("x-auth-token", token);
+            res.status(200).send({ status: true, token: token });
+        }
+        else{
+            res.status(404).send({status:false, msg:"please enter email and password"})
+        }
     }
     catch (error) {
-        res.status(500).send({ status:false , msg: error.message })
+        res.status(500).send({ status: false, msg: error.message })
     }
 }
 

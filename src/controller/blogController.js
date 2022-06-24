@@ -31,7 +31,6 @@ const createBlog = async function (req, res) {
 
         }
         if (isPublished !== true) {
-
             return res.status(400).send({ status: false, msg: "not Published " })
         }
         if (!validator.isValidObjId(authorId)) {
