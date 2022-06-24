@@ -154,13 +154,22 @@ const deleteBlogById = async function (req, res) {
 const deleteBlogByQueryParams = async function (req, res) {
     try {
         const data = req.query
-        const { category, authorId, isPublished } = data
-        const tagsData = req.query.tags
-        const subcategoryData = req.query.subcategory
+        const { category, authorId} = data
+        let isPublishedData = data.isPublished
+        const tagsData = data.tags
+        const subcategoryData = data.subcategory
         if (!Object.keys(data).length == 0) {
-            if (authorId || authorId === "") {
+            if (authorId || authorId == "") {
                 if (!mongoose.Types.ObjectId.isValid(authorId)) {
                     return res.status(400).send({ status: false, msg: "invalid AuthorID" })
+                }
+            }
+            if (isPublishedData || isPublishedData == "") {
+                if (isPublishedData == "false") {
+                    isPublishedData == false
+                }
+                else{
+                    return res.status(400).send({ status: false, msg: "isPublished should be false" })
                 }
             }
             const bloggDetails = await blogModel.find({
@@ -169,13 +178,13 @@ const deleteBlogByQueryParams = async function (req, res) {
                 },
                 { authorId },
                 { tags: { $in: tagsData } },
-                { isPublished },
-                { isDeleted: false },
+                {isPublished: isPublishedData },
                 {
                     subcategory: {
                         $in: subcategoryData,
                     }
-                }]
+                }],
+                isDeleted: false
             })
             if (Object.keys(bloggDetails).length === 0) {
                 res.status(404).send({ status: false, msg: "Blog Data is Not Available" })
@@ -187,20 +196,20 @@ const deleteBlogByQueryParams = async function (req, res) {
                     },
                     { authorId },
                     { tags: { $in: tagsData } },
-                    { isPublished },
-                    { isDeleted: false },
+                    { isPublished: isPublishedData },
                     {
                         subcategory: {
                             $in: subcategoryData,
                         }
-                    }]
+                    }],
+                    isDeleted: false
                 },
                     { isDeleted: true, deletedAt: new Date() })
                 res.status(200).send()
             }
         }
         else {
-            res.status(400).send({ status: false, msg: "require data not matched" })
+            res.status(400).send({ status: false, msg: "Invalid Data" })
         }
     }
     catch (error) {
