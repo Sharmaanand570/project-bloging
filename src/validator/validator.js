@@ -11,17 +11,19 @@ const isValid = (value) => {
 
 const isValidKey = (value) => {
     if (typeof value === "string" && value.trim().length === 0) return false;
-     if (typeof value === "string") { return true }
+    if (typeof value === "string") { return true }
     else {
         return false
     }
 }
 
 const isValidArray = (value) => {
-    if (Array.isArray(value)) { return true }
-    else {
-        return false
-    }
+    if (Array.isArray(value)) {
+        for (let i = 0; i < value.length; i++) {
+            if (value[i].trim().length === 0 || typeof(value[i])!== "string") { return false }
+        }
+     return true
+    }else { return false }
 }
 
 const isValidReqBody = function (reqBody) {
