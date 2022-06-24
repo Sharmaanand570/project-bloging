@@ -7,10 +7,13 @@ const createBlog = async function (req, res) {
     try {
         let data = req.body
         let id = req.body.authorId
+
+        // validation start
+        
         if (!validator.isValidReqBody(data)) {
             return res.status(400).send({ status: false, msg: "invalid request put valid data in body" })
         }
-        const { title, body, authorId, category, isPublished, tags, subcategory } = data
+        const { title, body, authorId, category, tags, subcategory } = data
         if (tags) {
             if (!validator.isValidArray(tags)) {
                 return res.status(400).send({ status: false, msg: "tags must be  array of string " })
@@ -27,15 +30,16 @@ const createBlog = async function (req, res) {
         if (!validator.isValid(body)) {
             return res.status(400).send({ status: false, msg: "body Required" })
         }
-        if (!validator.isValid(authorId)) {
-            return res.status(400).send({ status: false, msg: "authorId required" })
-        }
+      
         if (!validator.isValid(category)) {
             return res.status(400).send({ status: false, msg: "category required" })
 
         }
+
+      
+
         if (!validator.isValidObjId(authorId)) {
-            return res.status(400).send({ status: false, msg: "AuthorId invalid" })
+            return res.status(400).send({ status: false, msg: "AuthorId invalid  or not present " })
         }
         const findAuthor = await authorModel.findById(id)
         if (!findAuthor) {
@@ -43,11 +47,14 @@ const createBlog = async function (req, res) {
         }
         let saveData = await blogModel.create(data)
         return res.status(201).send({ status: true, msg: "Blog created succesfully", saveData })
+         
+        //validation End
     }
     catch (error) {
         return res.status(500).send({ status: false, msg: error.message })
     }
 }
+
 
 const getBlog = async function (req, res) {
     try {
@@ -190,22 +197,22 @@ const deleteBlogByQueryParams = async function (req, res) {
                 res.status(404).send({ status: false, msg: "Blog Data is Not Available" })
             }
             else {
-                await blogModel.updateMany({
-                    $or: [{
-                        category
-                    },
-                    { authorId },
-                    { tags: { $in: tagsData } },
-                    { isPublished: isPublishedData },
-                    {
-                        subcategory: {
-                            $in: subcategoryData,
-                        }
-                    }],
-                    isDeleted: false
-                },
-                    { isDeleted: true, deletedAt: new Date() })
-                res.status(200).send()
+                const token = req.headers["x-auth-token"]
+                let decodedToken = jwt.verify(token, "functionup-Project-1-Blogging-Room-18")
+                let allDeleteData = []
+                for (let i = 0; i < bloggDetails.length; i++) {
+                    if (decodedToken.authorId == bloggDetails[i].authorId) {
+                        const deleteData = await blogModel.findByIdAndUpdate({ _id: bloggDetails[i]._id },
+                            { isDeleted: true, deletedAt: new Date() })
+                        allDeleteData.push(deleteData)
+                    }
+                }
+                if (allDeleteData.length == 0) {
+                    res.status(404).send({ status: false, msg: "Blog Data is Not Available" })
+                }
+                else {
+                    res.status(200).send()
+                }
             }
         }
         else {
