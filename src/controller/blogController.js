@@ -18,16 +18,16 @@ const createBlog = async function (req, res) {
         const { title, body, authorId, category, tags, subcategory } = data
         if (tags) {
             if (!validator.isValidArray(tags)) {
-                return res.status(400).send({ status: false, msg: "tags must be  in array" })
+                return res.status(400).send({ status: false, msg: "tags must be  array of string " })
             }
         }
         if (subcategory) {
             if (!validator.isValidArray(subcategory)) {
-                return res.status(400).send({ status: false, msg: "subcategory must be  in aaray" })
+                return res.status(400).send({ status: false, msg: "subcategory must be  array of string" })
             }
         }
         if (!validator.isValid(title)) {
-            return res.status(400).send({ status: false, msg: "title required " })
+            return res.status(400).send({ status: false, msg: " title required " })
         }
         if (!validator.isValid(body)) {
             return res.status(400).send({ status: false, msg: "body Required" })
@@ -42,7 +42,7 @@ const createBlog = async function (req, res) {
         }
         const findAuthor = await authorModel.findById(id)
         if (!findAuthor) {
-            return res.status(400).send("Auther not exists")
+            return res.status(400).send("Author not exists")
         }
         let saveData = await blogModel.create(data)
         return res.status(201).send({ status: true, msg: "Blog created succesfully", saveData })
@@ -58,13 +58,12 @@ const createBlog = async function (req, res) {
 
 const getBlog = async function (req, res) {
     try {
-        let blogs = await blogModel.find({ isDeleted: false, isPublished: true });
+        const blogs = await blogModel.find({ isDeleted: false, isPublished: true });
         if (blogs.length == 0) {
             return res.status(404).send({ status: false, msg: "blogs not found" });
         }
-
-        let authorId = req.query.authorId;
-        const { category, tag, subcategory } = req.query
+        
+        const { category, tag, subcategory,authorId  } = req.query
 
         let temp = []
         for (let i = 0; i < blogs.length; i++) {
@@ -86,7 +85,7 @@ const getBlog = async function (req, res) {
         if (temp.length == 0) {
             res.status(404).send({ status: false, msg: "data not found" })
         }
-        else res.send({ status: true, Data: temp })
+        else res.status(200).send({ status: true, Data: temp })
     } catch (err) {
         res.status(500).send({ status: false, error: err.message })
     }
