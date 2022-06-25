@@ -4,6 +4,7 @@ const mongoose = require('mongoose')
 const validator = require('../validator/validator')
 const jwt = require("jsonwebtoken")
 
+//================================================Create a Blogg======================================================
 const createBlog = async function (req, res) {
     try {
         let data = req.body
@@ -53,6 +54,7 @@ const createBlog = async function (req, res) {
     }
 }
 
+//================================================Get Blogg======================================================
 
 const getBlog = async function (req, res) {
     try {
@@ -91,10 +93,7 @@ const getBlog = async function (req, res) {
 }
 
 
-
-
-
-
+//================================================Update Blogg======================================================
 
 const updateBlog = async function (req, res) {
     try {
@@ -102,43 +101,36 @@ const updateBlog = async function (req, res) {
         let blogId = req.params.blogId;
         let bodyData = req.body;
         const { title, body, tags, subcategory } = bodyData;
-
         if (!validator.isValidReqBody(req.params)) {
             return res.status(400).send({ status: false, message: "Invalid request parameters. Please provide some details" });
         }
-
         if (!validator.isValidObjId(blogId)) {
             return res
                 .status(400)
                 .send({ status: false, message: "BlogId is invalid" });
         }
-
-        if (title) {
+        if (title || title==="") {
             if (!validator.isValid(title)) {
                 return res
                     .status(400)
                     .send({ status: false, message: "Title is required " });
             }
         }
-
-        if (body) {
+        if (body || body==="") {
             if (!validator.isValid(body)) {
                 return res
                     .status(400)
                     .send({ status: false, message: "Body is required " });
             }
         }
-
-
-        if (tags) {
+        if (tags || tags==="") {
             if (tags.length === 0) {
                 return res
                     .status(400)
                     .send({ status: false, message: "tags is required " });
             }
         }
-
-        if (subcategory) {
+        if (subcategory || subcategory==="") {
             if (subcategory.length === 0) {
                 return res.status(400).send({
                     status: false,
@@ -146,12 +138,10 @@ const updateBlog = async function (req, res) {
                 });
             }
         }
-
         let Blog = await blogModel.findOne({ _id: blogId });
         if (!Blog) {
             return res.status(400).send({ status: false, msg: "No such blog found" });
         }
-
         if (req.body.title || req.body.body || req.body.tags || req.body.subcategory) {
             const title = req.body.title;
             const body = req.body.body;
@@ -176,16 +166,9 @@ const updateBlog = async function (req, res) {
     catch (err) {
         res.status(500).send({ status: false, Error: err.message, });
     }
-    //   if (Blog.authorId.toString() !== authorIdFromToken) {
-    //     res.status(401).send({
-    //       status: false,
-    //       message: `Unauthorized access! author's info doesn't match`,
-    //     });
-    //     return;
-    // }
-
 }
 
+//================================================Delete a Blogg by bloggId======================================================
 
 const deleteBlogById = async function (req, res) {
     try {
@@ -213,6 +196,8 @@ const deleteBlogById = async function (req, res) {
         res.status(500).send({ status: false, msg: error.message })
     }
 }
+
+//================================================Delete a Blogg by Query Params======================================================
 
 const deleteBlogByQueryParams = async function (req, res) {
     try {
