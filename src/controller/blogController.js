@@ -2,6 +2,7 @@ const blogModel = require("../models/blogModel")
 const authorModel = require("../models/authorModel")
 const mongoose = require('mongoose')
 const validator = require('../validator/validator')
+const jwt = require("jsonwebtoken")
 
 const createBlog = async function (req, res) {
     try {
@@ -9,7 +10,7 @@ const createBlog = async function (req, res) {
         let id = req.body.authorId
 
         // validation start
-        
+
         if (!validator.isValidReqBody(data)) {
             return res.status(400).send({ status: false, msg: "invalid request put valid data in body" })
         }
@@ -30,14 +31,11 @@ const createBlog = async function (req, res) {
         if (!validator.isValid(body)) {
             return res.status(400).send({ status: false, msg: "body Required" })
         }
-      
+
         if (!validator.isValid(category)) {
             return res.status(400).send({ status: false, msg: "category required" })
 
         }
-
-      
-
         if (!validator.isValidObjId(authorId)) {
             return res.status(400).send({ status: false, msg: "AuthorId invalid  or not present " })
         }
@@ -47,7 +45,7 @@ const createBlog = async function (req, res) {
         }
         let saveData = await blogModel.create(data)
         return res.status(201).send({ status: true, msg: "Blog created succesfully", saveData })
-         
+
         //validation End
     }
     catch (error) {
@@ -120,9 +118,10 @@ const updateBlog = async function (req, res) {
                 return res.status(400).send({ status: false, msg: "subcategory required" })
             }
         }
-        if (tags.length == 0) { return res.status(400).send({ status: false, msg: "Provide tag" }) }
-        if (subcategory.length == 0) { return res.status(400).send({ status: false, msg: " provide subcategory " }) }
-        let updatedata = await blogModel.findOneAndUpdate({ _id: blogId }, { published: true, publishedAt: new Date(), data }, { new: true })
+        let updatedata = await blogModel.findOneAndUpdate({ _id: blogId, isDeleted: false },
+            { $set: { isPublished: true, publishedAt: new Date(), body: body, title: title, category: category } },
+            { $addToSet: { tags: { $each: tags || [] } } },
+            { $adddToSet: { subcategory: { $each: subcategory || [] } } }, { new: true })
         return res.status(200).send({ status: true, data: updatedata })
     }
     catch (error) {
@@ -197,7 +196,7 @@ const deleteBlogByQueryParams = async function (req, res) {
                 res.status(404).send({ status: false, msg: "Blog Data is Not Available" })
             }
             else {
-                const token = req.headers["x-auth-token"]
+                const token = req.headers["x-api-key"]
                 let decodedToken = jwt.verify(token, "functionup-Project-1-Blogging-Room-18")
                 let allDeleteData = []
                 for (let i = 0; i < bloggDetails.length; i++) {

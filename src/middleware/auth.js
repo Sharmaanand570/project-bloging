@@ -1,8 +1,9 @@
 const jwt = require("jsonwebtoken")
+const blogModel = require("../models/blogModel")
 
 let authenticate = async function (req, res, next) {
     try {
-        let token = req.headers["x-auth-token"]
+        let token = req.headers["x-api-key"]
         if (!token) {
             res.status(404).send({ status: false, msg: "token must be present" })
         }
@@ -21,25 +22,18 @@ let authenticate = async function (req, res, next) {
     }
 }
 
+
 let authorise = async function (req, res, next) {
     try {
-        const authorIdParams = req.params.authorId
-        const authorIdQuery = req.query.authorId
-        const authorIdBody = req.body.authorId
-        const authorIdHeaders = req.headers.authorId
-        const token = req.headers["x-auth-token"]
+        let blogIdParams = req.params.blogId
+        const data = await blogModel.findById(blogIdParams).select({ authorId: 1, _id: 0 })
+        const token = req.headers["x-api-key"]
         let decodedToken = jwt.verify(token, "functionup-Project-1-Blogging-Room-18")
-        if (authorIdParams == decodedToken.authorId ||
-            authorIdQuery == decodedToken.authorId ||
-            authorIdBody == decodedToken.authorId ||
-            authorIdHeaders == decodedToken.authorId) {
+        if (data.authorId == decodedToken.authorId) {
             next()
         }
         else {
-
-            
             res.status(401).send("Authorization failed")
-
         }
     }
     catch (error) {

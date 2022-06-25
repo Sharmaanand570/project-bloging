@@ -58,7 +58,7 @@ const authorLogin = async function (req, res) {
                 },
                 "functionup-Project-1-Blogging-Room-18"
             );
-            res.status(200).setHeader("x-auth-token", token);
+            res.status(200).setHeader("x-api-key", token);
             res.status(200).send({ status: true, token: token });
         }
         else{
