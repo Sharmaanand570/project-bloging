@@ -29,6 +29,7 @@ let authorise = async function (req, res, next) {
         const authorIdHeaders = req.headers.authorId
         const token = req.headers["x-auth-token"]
         let decodedToken = jwt.verify(token, "functionup-Project-1-Blogging-Room-18")
+    
         if (authorIdParams == decodedToken.authorId ||
             authorIdQuery == decodedToken.authorId ||
             authorIdBody == decodedToken.authorId ||

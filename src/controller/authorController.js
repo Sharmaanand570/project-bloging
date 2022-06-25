@@ -4,15 +4,14 @@ const jwt = require("jsonwebtoken")
 const createAuthor = async function (req, res) {
     try {
 
-        let authorData = req.body;
 
-        const { fname, lname, title, email, password } = authorData;
+        const { fname, lname, title, email, password } = req.body;
 
         if (!(fname && lname && title && email && password)) {
             return res.status(400).send({ status: false, msg: "key value is not present" })
         }
 
-        let checkMail = await authorModel.findOne({ email: email });
+        const checkMail = await authorModel.findOne({ email: email });
         if (checkMail) {
             return res.status(409).send({ status: false, msg: " duplicate email" })
         }
@@ -24,7 +23,7 @@ const createAuthor = async function (req, res) {
             if (typeof (lname) === "string" && lname.trim().length !== 0) {
                 if (typeof (email) === "string" && email.trim().length !== 0) {
                     if (typeof (password) === "string" && password.trim().length !== 0) {
-                        let savedAuthorData = await authorModel.create(authorData);
+                        const savedAuthorData = await authorModel.create(authorData);
                         if (!savedAuthorData) {
                             return res.status(400).send({ status: false, msg: "cannot create data" })
                         }
@@ -43,13 +42,13 @@ const authorLogin = async function (req, res) {
     try {
         const authorData = req.body
         if (!Object.keys(authorData).length==0) {
-            let data = await authorModel.findOne({ email: authorData.email, password: authorData.password });
+            const data = await authorModel.findOne({ email: authorData.email, password: authorData.password });
             if (!data)
                 return res.status(400).send({
                     status: false,
                     msg: "username or the password is not correct",
                 })
-            let token = jwt.sign(
+                const token = jwt.sign(
                 {
                     authorId: data._id.toString(),
                     admin: true,
@@ -58,7 +57,7 @@ const authorLogin = async function (req, res) {
                 },
                 "functionup-Project-1-Blogging-Room-18"
             );
-            res.status(200).setHeader("x-auth-token", token);
+            res.status(200).setHeader("x-api-key", token);
             return res.status(200).send({ status: true, token: token });
         }
         else{

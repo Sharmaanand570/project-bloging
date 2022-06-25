@@ -43,7 +43,7 @@ const createBlog = async function (req, res) {
         }
         const findAuthor = await authorModel.findById(id)
         if (!findAuthor) {
-            return res.status(400).send("Auther not exists")
+            return res.status(400).send("Author not exists")
         }
         let saveData = await blogModel.create(data)
         return res.status(201).send({ status: true, msg: "Blog created succesfully", saveData })
@@ -58,13 +58,12 @@ const createBlog = async function (req, res) {
 
 const getBlog = async function (req, res) {
     try {
-        let blogs = await blogModel.find({ isDeleted: false, isPublished: true });
+        const blogs = await blogModel.find({ isDeleted: false, isPublished: true });
         if (blogs.length == 0) {
             return res.status(404).send({ status: false, msg: "blogs not found" });
         }
-        console.log(blogs)
-        let authorId = req.query.authorId;
-        const { category, tag, subcategory } = req.query
+        
+        const { category, tag, subcategory,authorId  } = req.query
 
         let temp = []
         for (let i = 0; i < blogs.length; i++) {
@@ -86,7 +85,7 @@ const getBlog = async function (req, res) {
         if (temp.length == 0) {
             res.status(404).send({ status: false, msg: "data not found" })
         }
-        else res.send({ status: true, Data: temp })
+        else res.status(200).send({ status: true, Data: temp })
     } catch (err) {
         res.status(500).send({ status: false, error: err.message })
     }
@@ -122,7 +121,7 @@ const updateBlog = async function (req, res) {
         }
         if (tags.length == 0) { return res.status(400).send({ status: false, msg: "Provide tag" }) }
         if (subcategory.length == 0) { return res.status(400).send({ status: false, msg: " provide subcategory " }) }
-        let updatedata = await blogModel.findOneAndUpdate({ _id: blogId }, { published: true, publishedAt: new Date(), data }, { new: true })
+        let updatedata = await blogModel.findOneAndUpdate({ _id: blogId }, { published: true, publishedAt: new Date(), $set : data  }, { new: true })
         return res.status(200).send({ status: true, data: updatedata })
     }
     catch (error) {
