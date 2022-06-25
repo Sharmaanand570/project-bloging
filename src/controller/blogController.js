@@ -7,12 +7,12 @@ const jwt = require("jsonwebtoken")
 //================================================Create a Blogg======================================================
 const createBlog = async function (req, res) {
     try {
-        let data = req.body
-        let id = req.body.authorId
+        const data = req.body
+        const id = req.body.authorId
 
         // validation start
 
-        if (!validator.isValidReqBody(data)) {
+        if (Object.keys(data).length == 0) {
             return res.status(400).send({ status: false, msg: "invalid request put valid data in body" })
         }
         const { title, body, authorId, category, tags, subcategory } = data
@@ -37,7 +37,7 @@ const createBlog = async function (req, res) {
             return res.status(400).send({ status: false, msg: "category required" })
 
         }
-        if (!validator.isValidObjId(authorId)) {
+        if (!mongoose.Types.ObjectId.isValid(authorId)) {
             return res.status(400).send({ status: false, msg: "AuthorId invalid  or not present " })
         }
         const findAuthor = await authorModel.findById(id)
@@ -62,7 +62,7 @@ const getBlog = async function (req, res) {
         if (blogs.length == 0) {
             return res.status(404).send({ status: false, msg: "blogs not found" });
         }
-        console.log(blogs)
+
         let authorId = req.query.authorId;
         const { category, tag, subcategory } = req.query
 
@@ -97,40 +97,39 @@ const getBlog = async function (req, res) {
 
 const updateBlog = async function (req, res) {
     try {
-        let authorId = req.authorId;
-        let blogId = req.params.blogId;
-        let bodyData = req.body;
+
+        const blogId = req.params.blogId;
+        const bodyData = req.body;
         const { title, body, tags, subcategory } = bodyData;
-        if (!validator.isValidReqBody(req.params)) {
-            return res.status(400).send({ status: false, message: "Invalid request parameters. Please provide some details" });
+        if (Object.keys(bodyData).length == 0) {
+            return res.status(400).send(
+                { status: false, message: "There is no data  in body Please provide some details" });
         }
-        if (!validator.isValidObjId(blogId)) {
-            return res
-                .status(400)
-                .send({ status: false, message: "BlogId is invalid" });
+        if (!mongoose.Types.ObjectId.isValid(blogId)) {
+            return res.status(400).send({ status: false, msg: "BlogId invalid " })
         }
-        if (title || title==="") {
+        if (title || title === "") {
             if (!validator.isValid(title)) {
                 return res
                     .status(400)
                     .send({ status: false, message: "Title is required " });
             }
         }
-        if (body || body==="") {
+        if (body || body === "") {
             if (!validator.isValid(body)) {
                 return res
                     .status(400)
                     .send({ status: false, message: "Body is required " });
             }
         }
-        if (tags || tags==="") {
+        if (tags || tags === "") {
             if (tags.length === 0) {
                 return res
                     .status(400)
                     .send({ status: false, message: "tags is required " });
             }
         }
-        if (subcategory || subcategory==="") {
+        if (subcategory || subcategory === "") {
             if (subcategory.length === 0) {
                 return res.status(400).send({
                     status: false,
@@ -142,27 +141,19 @@ const updateBlog = async function (req, res) {
         if (!Blog) {
             return res.status(400).send({ status: false, msg: "No such blog found" });
         }
-        if (req.body.title || req.body.body || req.body.tags || req.body.subcategory) {
-            const title = req.body.title;
-            const body = req.body.body;
-            const tags = req.body.tags;
-            const subcategory = req.body.subcategory;
-            const isPublished = req.body.isPublished;
 
-            const updatedBlog = await blogModel.findOneAndUpdate({ _id: req.params.blogId, isDeleted: false },
-                { title: title, body: body, $addToSet: { tags: tags, subcategory: subcategory }, isPublished: isPublished }, { new: true });
-            if (!updateBlog) {
-                res.status(404).send({ status: false, msg: "blogg not found" })
-            }
-            else {
-                res.status(200).send({ status: true, message: "Successfully updated blog details", data: updatedBlog, });
-            }
+
+        const updatedBlog = await blogModel.findOneAndUpdate({ _id: req.params.blogId, isDeleted: false },
+            { title: title, body: body, $addToSet: { tags: tags, subcategory: subcategory }, isPublished: true }, { new: true });
+        if (updateBlog) {
+            res.status(200).send({ status: true, message: "Successfully updated blog details", data: updatedBlog, });
         }
-
         else {
-            return res.status(400).send({ status: false, msg: "Please provide blog details to update" });
+            
+            res.status(404).send({ status: false, msg: "blog not found" })
         }
     }
+
     catch (err) {
         res.status(500).send({ status: false, Error: err.message, });
     }
