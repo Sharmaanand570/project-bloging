@@ -132,12 +132,15 @@ const updateBlog = async function (req, res) {
                 });
             }
         }
-        const Blog = await blogModel.findOne({ _id: blogId });
+        const Blog = await blogModel.findOne({ _id: blogId, isDeleted: false });
         if (!Blog) {
             return res.status(400).send({ status: false, msg: "No such blog found" });
         }
-        const updatedBlog = await blogModel.findOneAndUpdate({ _id: req.params.blogId, isDeleted: false },
-            { title: title, body: body, $addToSet: { tags: tags, subcategory: subcategory }, isPublished: true }, { new: true });
+        const updatedBlog = await blogModel.findByIdAndUpdate({ _id: blogId },
+            {
+                title: title, body: body, $addToSet: { tags: tags, subcategory: subcategory },
+                isPublished: true, publishedAt: new Date()
+            }, { new: true });
         if (updateBlog) {
             res.status(200).send({ status: true, message: "Successfully updated blog details", data: updatedBlog, });
         }

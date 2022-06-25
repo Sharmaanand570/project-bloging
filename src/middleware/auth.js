@@ -1,5 +1,6 @@
 const jwt = require("jsonwebtoken")
 const blogModel = require("../models/blogModel")
+const mongoose = require("mongoose")
 
 //================================================Authentication======================================================
 
@@ -30,7 +31,13 @@ const authenticate = function (req, res, next) {
 const authorise = async function (req, res, next) {
     try {
         const blogIdParams = req.params.blogId
+        if(!mongoose.Types.ObjectId.isValid(blogIdParams)){
+            return res.status(401).send("provide valid blogId")
+        }
         const data = await blogModel.findById(blogIdParams).select({ authorId: 1, _id: 0 })
+        if(!data){
+            return res.status(401).send("provide valid blogId")
+        }
         const token = req.headers["x-api-key"]
         const decodedToken = jwt.verify(token, "functionup-Project-1-Blogging-Room-18")
         if (data.authorId == decodedToken.authorId) {

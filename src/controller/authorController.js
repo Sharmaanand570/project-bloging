@@ -21,7 +21,7 @@ const createAuthor = async function (req, res) {
             if (typeof (lname) === "string" && lname.trim().length !== 0) {
                 if (typeof (email) === "string" && email.trim().length !== 0) {
                     if (typeof (password) === "string" && password.trim().length !== 0) {
-                        const savedAuthorData = await authorModel.create(authorData);
+                        const savedAuthorData = await authorModel.create({fname, lname, title, email, password});
                         if (!savedAuthorData) {
                             return res.status(400).send({ status: false, msg: "cannot create data" })
                         }
@@ -46,7 +46,7 @@ const authorLogin = async function (req, res) {
             if (!data)
                 return res.status(400).send({
                     status: false,
-                    msg: "username or the password is not correct",
+                    msg: "email or the password is not correct",
                 })
                 const token = jwt.sign(
                 {
