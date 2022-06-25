@@ -26,16 +26,7 @@ const isValidArray = (value) => {
     }else { return false }
 }
 
-const isValidReqBody = function (reqBody) {
-    return Object.keys(reqBody).length > 0
-}
 
-const isValidObjId = function (ObjectId) {
-    return mongoose.Types.ObjectId.isValid(ObjectId)
-}
-
-module.exports.isValidReqBody = isValidReqBody
-module.exports.isValidObjId = isValidObjId
 module.exports.isValid = isValid
 module.exports.isValidArray = isValidArray
 module.exports.isValidKey = isValidKey
