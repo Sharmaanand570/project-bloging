@@ -5,14 +5,10 @@ const jwt = require("jsonwebtoken")
 
 const createAuthor = async function (req, res) {
     try {
-
-
         const { fname, lname, title, email, password } = req.body;
-
         if (!(fname && lname && title && email && password)) {
             return res.status(400).send({ status: false, msg: "key value is not present" })
         }
-
         const checkMail = await authorModel.findOne({ email: email });
         if (checkMail) {
             return res.status(409).send({ status: false, msg: " duplicate email" })

@@ -3,9 +3,9 @@ const blogModel = require("../models/blogModel")
 
 //================================================Authentication======================================================
 
-let authenticate = function (req, res, next) {
+const authenticate = function (req, res, next) {
     try {
-        let token = req.headers["x-api-key"]
+        const token = req.headers["x-api-key"]
         if (!token) {
             res.status(404).send({ status: false, msg: "token must be present" })
         }
@@ -27,12 +27,12 @@ let authenticate = function (req, res, next) {
 
 //================================================Authorisation======================================================
 
-let authorise = async function (req, res, next) {
+const authorise = async function (req, res, next) {
     try {
-        let blogIdParams = req.params.blogId
+        const blogIdParams = req.params.blogId
         const data = await blogModel.findById(blogIdParams).select({ authorId: 1, _id: 0 })
         const token = req.headers["x-api-key"]
-        let decodedToken = jwt.verify(token, "functionup-Project-1-Blogging-Room-18")
+        const decodedToken = jwt.verify(token, "functionup-Project-1-Blogging-Room-18")
         if (data.authorId == decodedToken.authorId) {
             next()
         }

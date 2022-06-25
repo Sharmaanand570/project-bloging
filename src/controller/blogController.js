@@ -11,7 +11,6 @@ const createBlog = async function (req, res) {
         const id = req.body.authorId
 
         // validation start
-
         if (Object.keys(data).length == 0) {
             return res.status(400).send({ status: false, msg: "invalid request put valid data in body" })
         }
@@ -44,10 +43,10 @@ const createBlog = async function (req, res) {
         if (!findAuthor) {
             return res.status(400).send("Author not exists")
         }
-        let saveData = await blogModel.create(data)
+        const saveData = await blogModel.create(data)
         return res.status(201).send({ status: true, msg: "Blog created succesfully", saveData })
-
         //validation End
+
     }
     catch (error) {
         return res.status(500).send({ status: false, msg: error.message })
@@ -62,9 +61,7 @@ const getBlog = async function (req, res) {
         if (blogs.length == 0) {
             return res.status(404).send({ status: false, msg: "blogs not found" });
         }
-        
-        const { category, tag, subcategory,authorId  } = req.query
-
+        const { category, tag, subcategory, authorId } = req.query
         let temp = []
         for (let i = 0; i < blogs.length; i++) {
             let x = blogs[i];
@@ -120,14 +117,14 @@ const updateBlog = async function (req, res) {
                     .send({ status: false, message: "Body is required " });
             }
         }
-        if (tags || tags==="") {
+        if (tags || tags === "") {
             if (!validator.isValidArray(tags)) {
                 return res
                     .status(400)
                     .send({ status: false, message: "tags is required " });
             }
         }
-        if (subcategory || subcategory==="") {
+        if (subcategory || subcategory === "") {
             if (!validator.isValidArray(subcategory)) {
                 return res.status(400).send({
                     status: false,
@@ -135,23 +132,19 @@ const updateBlog = async function (req, res) {
                 });
             }
         }
-        let Blog = await blogModel.findOne({ _id: blogId });
+        const Blog = await blogModel.findOne({ _id: blogId });
         if (!Blog) {
             return res.status(400).send({ status: false, msg: "No such blog found" });
         }
-
-
         const updatedBlog = await blogModel.findOneAndUpdate({ _id: req.params.blogId, isDeleted: false },
             { title: title, body: body, $addToSet: { tags: tags, subcategory: subcategory }, isPublished: true }, { new: true });
         if (updateBlog) {
             res.status(200).send({ status: true, message: "Successfully updated blog details", data: updatedBlog, });
         }
         else {
-            
             res.status(404).send({ status: false, msg: "blog not found" })
         }
     }
-
     catch (err) {
         res.status(500).send({ status: false, Error: err.message, });
     }

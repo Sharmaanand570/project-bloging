@@ -1,4 +1,3 @@
-const mongoose = require('mongoose')
 
 const isValid = (value) => {
     if (typeof value === "undefined" || value === null) return false
@@ -25,7 +24,6 @@ const isValidArray = (value) => {
      return true
     }else { return false }
 }
-
 
 module.exports.isValid = isValid
 module.exports.isValidArray = isValidArray
