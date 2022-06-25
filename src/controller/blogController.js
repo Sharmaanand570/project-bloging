@@ -107,24 +107,28 @@ const updateBlog = async function (req, res) {
             return res.status(400).send({ status: false, message: "Invalid request parameters. Please provide some details" });
         }
 
-
         if (!validator.isValidObjId(blogId)) {
             return res
                 .status(400)
                 .send({ status: false, message: "BlogId is invalid" });
         }
 
-        if (!validator.isValid(title)) {
-            return res
-                .status(400)
-                .send({ status: false, message: "Title is required " });
+        if (title) {
+            if (!validator.isValid(title)) {
+                return res
+                    .status(400)
+                    .send({ status: false, message: "Title is required " });
+            }
         }
 
-        if (!validator.isValid(body)) {
-            return res
-                .status(400)
-                .send({ status: false, message: "Body is required " });
+        if (body) {
+            if (!validator.isValid(body)) {
+                return res
+                    .status(400)
+                    .send({ status: false, message: "Body is required " });
+            }
         }
+
 
         if (tags) {
             if (tags.length === 0) {
@@ -155,18 +159,23 @@ const updateBlog = async function (req, res) {
             const subcategory = req.body.subcategory;
             const isPublished = req.body.isPublished;
 
-            const updatedBlog = await blogModel.findOneAndUpdate({ _id: req.params.blogId },
-                { title: title, body: body, $addToSet: { tags: tags, subcategory: subcategory }, isPublished: isPublished, }, { new: true });
-            if (updatedBlog.isPublished == true) { updatedBlog.publishedAt = new Date(); }
-            if (updatedBlog.isPublished == false) { updatedBlog.publishedAt = null; }
-            return res.status(200).send({ status: true, message: "Successfully updated blog details", data: updatedBlog, });
+            const updatedBlog = await blogModel.findOneAndUpdate({ _id: req.params.blogId, isDeleted: false },
+                { title: title, body: body, $addToSet: { tags: tags, subcategory: subcategory }, isPublished: isPublished }, { new: true });
+            if (!updateBlog) {
+                res.status(404).send({ status: false, msg: "blogg not found" })
+            }
+            else {
+                res.status(200).send({ status: true, message: "Successfully updated blog details", data: updatedBlog, });
+            }
         }
 
         else {
             return res.status(400).send({ status: false, msg: "Please provide blog details to update" });
         }
     }
-    catch (err) { res.status(500).send({ status: false, Error: err.message, }); }
+    catch (err) {
+        res.status(500).send({ status: false, Error: err.message, });
+    }
     //   if (Blog.authorId.toString() !== authorIdFromToken) {
     //     res.status(401).send({
     //       status: false,

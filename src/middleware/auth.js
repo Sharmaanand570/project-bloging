@@ -8,11 +8,12 @@ let authenticate = async function (req, res, next) {
             res.status(404).send({ status: false, msg: "token must be present" })
         }
         else {
-            try {
+            const validToken =jwt.decode(token)
+            if(validToken){
                 jwt.verify(token, "functionup-Project-1-Blogging-Room-18")
                 next()
             }
-            catch (error) {
+            else{
                 res.status(403).send({ status: false, msg: "Invalid token" })
             }
         }
