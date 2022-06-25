@@ -97,7 +97,6 @@ const getBlog = async function (req, res) {
 
 const updateBlog = async function (req, res) {
     try {
-        let authorId = req.authorId;
         let blogId = req.params.blogId;
         let bodyData = req.body;
         const { title, body, tags, subcategory } = bodyData;
@@ -124,14 +123,14 @@ const updateBlog = async function (req, res) {
             }
         }
         if (tags || tags==="") {
-            if (tags.length === 0) {
+            if (!validator.isValidArray(tags)) {
                 return res
                     .status(400)
                     .send({ status: false, message: "tags is required " });
             }
         }
         if (subcategory || subcategory==="") {
-            if (subcategory.length === 0) {
+            if (!validator.isValidArray(subcategory)) {
                 return res.status(400).send({
                     status: false,
                     message: "subcategory is required ",
@@ -158,7 +157,6 @@ const updateBlog = async function (req, res) {
                 res.status(200).send({ status: true, message: "Successfully updated blog details", data: updatedBlog, });
             }
         }
-
         else {
             return res.status(400).send({ status: false, msg: "Please provide blog details to update" });
         }
@@ -239,7 +237,7 @@ const deleteBlogByQueryParams = async function (req, res) {
             }
             else {
                 const token = req.headers["x-api-key"]
-                let decodedToken = jwt.verify(token, "functionup-Project-1-Blogging-Room-18")
+                const decodedToken = jwt.verify(token, "functionup-Project-1-Blogging-Room-18")
                 let allDeleteData = []
                 for (let i = 0; i < bloggDetails.length; i++) {
                     if (decodedToken.authorId == bloggDetails[i].authorId) {

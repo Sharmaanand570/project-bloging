@@ -3,7 +3,7 @@ const blogModel = require("../models/blogModel")
 
 //================================================Authentication======================================================
 
-let authenticate = async function (req, res, next) {
+let authenticate = function (req, res, next) {
     try {
         let token = req.headers["x-api-key"]
         if (!token) {
