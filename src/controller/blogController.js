@@ -36,6 +36,11 @@ const createBlog = async function (req, res) {
             return res.status(400).send({ status: false, msg: "category required" })
 
         }
+        if(isPublished) {
+            if(isPublished === "boolean") {
+                return res.status(400).send({ status : false , msg : " is published should have boolean value"})
+            }
+        }
         if (!mongoose.Types.ObjectId.isValid(authorId)) {
             return res.status(400).send({ status: false, msg: "AuthorId invalid  or not present " })
         }
@@ -43,9 +48,10 @@ const createBlog = async function (req, res) {
         if (!findAuthor) {
             return res.status(400).send("Author not exists")
         }
+        // validation end
         const saveData = await blogModel.create(data)
-        return res.status(201).send({ status: true, msg: "Blog created succesfully", saveData })
-        //validation End
+        return res.status(201).send({ status: true, Data : saveData })
+        
 
     }
     catch (error) {

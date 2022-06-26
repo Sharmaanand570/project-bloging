@@ -7,7 +7,7 @@ const createAuthor = async function (req, res) {
     try {
         const { fname, lname, title, email, password } = req.body;
         if (!(fname && lname && title && email && password)) {
-            return res.status(400).send({ status: false, msg: "key value is not present" })
+            return res.status(400).send({ status: false, msg: "you have to enter all compulsory details" })
         }
         const checkMail = await authorModel.findOne({ email: email });
         if (checkMail) {
@@ -41,10 +41,12 @@ const createAuthor = async function (req, res) {
 const authorLogin = async function (req, res) {
     try {
         const authorData = req.body
-        if (!Object.keys(authorData).length==0) {
+        if(!authorData.email)  return res.status(400).send({ status : false , msg : "please provide email"});
+        if(!authorData.password)  return res.status(400).send({ status : false , msg : "please provide password"});
+        
             const data = await authorModel.findOne({ email: authorData.email, password: authorData.password });
             if (!data)
-                return res.status(400).send({
+                return res.status(401).send({
                     status: false,
                     msg: "email or the password is not correct",
                 })
@@ -59,10 +61,8 @@ const authorLogin = async function (req, res) {
             );
             res.status(200).setHeader("x-api-key", token);
             res.status(200).send({ status: true, token: token });
-        }
-        else{
-            return res.status(404).send({status:false, msg:"please enter email and password"})
-        }
+        
+       
     }
     catch (error) {
         return res.status(500).send({ status: false, msg: error.message })
