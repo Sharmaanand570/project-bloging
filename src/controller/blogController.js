@@ -37,7 +37,7 @@ const createBlog = async function (req, res) {
 
         }
         if(isPublished) {
-            if(isPublished === "boolean") {
+            if(isPublished !== "boolean") {
                 return res.status(400).send({ status : false , msg : " is published should have boolean value"})
             }
         }
