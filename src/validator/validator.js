@@ -19,12 +19,18 @@ const isValidKey = (value) => {
 const isValidArray = (value) => {
     if (Array.isArray(value)) {
         for (let i = 0; i < value.length; i++) {
-            if (value[i].trim().length === 0 || typeof(value[i])!== "string") { return false }
+            if (value[i].trim().length === 0 || typeof (value[i]) !== "string") { return false }
         }
-     return true
-    }else { return false }
+        return true
+    } else { return false }
+}
+
+const isvalidEmail = (value) => {
+    const re= /\S+@\S+\.\S+/
+    return re.test(value)
 }
 
 module.exports.isValid = isValid
 module.exports.isValidArray = isValidArray
 module.exports.isValidKey = isValidKey
+module.exports.isvalidEmail = isvalidEmail

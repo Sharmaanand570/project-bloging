@@ -9,12 +9,12 @@ const createBlog = async function (req, res) {
     try {
         const data = req.body
         const id = req.body.authorId
+        
 
         // validation start
         if (Object.keys(data).length == 0) {
             return res.status(400).send({ status: false, msg: "invalid request put valid data in body" })
         }
-        const { title, body, authorId, category, tags, subcategory, isPublished } = data
         if (tags) {
             if (!validator.isValidArray(tags)) {
                 return res.status(400).send({ status: false, msg: "tags must be  array of string " })
@@ -49,7 +49,7 @@ const createBlog = async function (req, res) {
             return res.status(400).send("Author not exists")
         }
         // validation end
-        const saveData = await blogModel.create(data)
+        const saveData = await blogModel.create(title, body, authorId, category, tags, subcategory, isPublished)
         return res.status(201).send({ status: true, Data : saveData })
         
 
