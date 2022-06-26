@@ -64,6 +64,7 @@ const createBlog = async function (req, res) {
 const getBlog = async function (req, res) {
     try {
         const blogs = await blogModel.find({ isDeleted: false, isPublished: true });
+        console.log(blogs)
         if (blogs.length == 0) {
             return res.status(404).send({ status: false, msg: "blogs not found" });
         }
@@ -95,7 +96,7 @@ const getBlog = async function (req, res) {
 }
 
 
-//================================================Update Blogg======================================================
+//================================================Update Blog======================================================
 
 const updateBlog = async function (req, res) {
     try {
@@ -159,7 +160,7 @@ const updateBlog = async function (req, res) {
     }
 }
 
-//================================================Delete a Blogg by bloggId======================================================
+//================================================Delete a Blog by bloggId======================================================
 
 const deleteBlogById = async function (req, res) {
     try {

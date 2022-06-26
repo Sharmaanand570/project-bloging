@@ -7,6 +7,7 @@ const mongoose = require("mongoose")
 const authenticate = function (req, res, next) {
     try {
         const token = req.headers["x-api-key"]
+        
         if (!token) {
             res.status(404).send({ status: false, msg: "token must be present" })
         }
