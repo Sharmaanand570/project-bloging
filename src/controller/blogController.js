@@ -9,18 +9,18 @@ const createBlog = async function (req, res) {
     try {
         const data = req.body
         const id = req.body.authorId
-        
+        const {title, body, authorId, category, tags, subcategory, isPublished} = data
 
         // validation start
         if (Object.keys(data).length == 0) {
             return res.status(400).send({ status: false, msg: "invalid request put valid data in body" })
         }
-        if (tags) {
+        if (tags || tags == "") {
             if (!validator.isValidArray(tags)) {
                 return res.status(400).send({ status: false, msg: "tags must be  array of string " })
             }
         }
-        if (subcategory) {
+        if (subcategory || subcategory == "") {
             if (!validator.isValidArray(subcategory)) {
                 return res.status(400).send({ status: false, msg: "subcategory must be  array of string" })
             }
@@ -36,7 +36,7 @@ const createBlog = async function (req, res) {
             return res.status(400).send({ status: false, msg: "category required ( In string)" })
 
         }
-        if(isPublished || isPublished == false ) {
+        if(isPublished || isPublished == "" || isPublished == false) {
             if( typeof isPublished !== "boolean") {
                 return res.status(400).send({ status : false , msg : " is published should have boolean value"})
             }
@@ -49,7 +49,7 @@ const createBlog = async function (req, res) {
             return res.status(400).send("Author not exists")
         }
         // validation end
-        const saveData = await blogModel.create(title, body, authorId, category, tags, subcategory, isPublished)
+        const saveData = await blogModel.create({title, body, authorId, category, tags, subcategory, isPublished})
         return res.status(201).send({ status: true, Data : saveData })
         
 
@@ -64,7 +64,6 @@ const createBlog = async function (req, res) {
 const getBlog = async function (req, res) {
     try {
         const blogs = await blogModel.find({ isDeleted: false, isPublished: true });
-        console.log(blogs)
         if (blogs.length == 0) {
             return res.status(404).send({ status: false, msg: "blogs not found" });
         }
@@ -225,7 +224,7 @@ const deleteBlogByQueryParams = async function (req, res) {
                     }
                 }],
                 isDeleted: false
-            })
+            }).select({authorId:1,_id:1})
             if (Object.keys(bloggDetails).length == 0) {
                 res.status(404).send({ status: false, msg: "Blog Data is Not Available" })
             }

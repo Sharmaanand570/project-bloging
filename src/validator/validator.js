@@ -8,14 +8,6 @@ const isValid = (value) => {
     }
 }
 
-const isValidKey = (value) => {
-    if (typeof value === "string" && value.trim().length === 0) return false;
-    if (typeof value === "string") { return true }
-    else {
-        return false
-    }
-}
-
 const isValidArray = (value) => {
     if (Array.isArray(value)) {
         for (let i = 0; i < value.length; i++) {
@@ -25,12 +17,11 @@ const isValidArray = (value) => {
     } else { return false }
 }
 
-const isvalidEmail = (value) => {
+const isValidEmail = (value) => {
     const re= /\S+@\S+\.\S+/
     return re.test(value)
 }
 
 module.exports.isValid = isValid
 module.exports.isValidArray = isValidArray
-module.exports.isValidKey = isValidKey
-module.exports.isvalidEmail = isvalidEmail
+module.exports.isValidEmail = isValidEmail

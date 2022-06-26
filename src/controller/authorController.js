@@ -19,7 +19,7 @@ const createAuthor = async function (req, res) {
 
         if (typeof (fname) === "string" && fname.trim().length !== 0) {
             if (typeof (lname) === "string" && lname.trim().length !== 0) {
-                if (typeof (email) === "string" && email.trim().length !== 0 && validator.isvalidEmail(email)) {
+                if (typeof (email) === "string" && email.trim().length !== 0 && validator.isValidEmail(email)) {
                     if (typeof (password) === "string" && password.trim().length !== 0) {
                         const savedAuthorData = await authorModel.create({ fname, lname, title, email, password });
                         if (!savedAuthorData) {
@@ -41,8 +41,8 @@ const createAuthor = async function (req, res) {
 const authorLogin = async function (req, res) {
     try {
         const authorData = req.body
-        if (!authorData.email) return res.status(400).send({ status: false, msg: "please provide email" });
-        if (!authorData.password) return res.status(400).send({ status: false, msg: "please provide password" });
+        if (!validator.isValidEmail(authorData.email)) return res.status(400).send({ status: false, msg: "please provide valid email" });
+        if (!validator.isValid(authorData.password)) return res.status(400).send({ status: false, msg: "please provide valid password" });
 
         const data = await authorModel.findOne({ email: authorData.email, password: authorData.password });
         if (!data)
