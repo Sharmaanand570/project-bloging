@@ -14,7 +14,8 @@ const createBlog = async function (req, res) {
         if (Object.keys(data).length == 0) {
             return res.status(400).send({ status: false, msg: "invalid request put valid data in body" })
         }
-        const { title, body, authorId, category, tags, subcategory } = data
+        const { title, body, authorId, category, tags, subcategory, isPublished } = data
+        console.log(typeof isPublished)
         if (tags) {
             if (!validator.isValidArray(tags)) {
                 return res.status(400).send({ status: false, msg: "tags must be  array of string " })
@@ -26,18 +27,18 @@ const createBlog = async function (req, res) {
             }
         }
         if (!validator.isValid(title)) {
-            return res.status(400).send({ status: false, msg: " title required " })
+            return res.status(400).send({ status: false, msg: " title required ( In string) " })
         }
         if (!validator.isValid(body)) {
-            return res.status(400).send({ status: false, msg: "body Required" })
+            return res.status(400).send({ status: false, msg: "body Required ( In string)" })
         }
 
         if (!validator.isValid(category)) {
-            return res.status(400).send({ status: false, msg: "category required" })
+            return res.status(400).send({ status: false, msg: "category required ( In string)" })
 
         }
-        if(isPublished) {
-            if(isPublished === "boolean") {
+        if(isPublished || isPublished == false ) {
+            if( typeof isPublished !== "boolean") {
                 return res.status(400).send({ status : false , msg : " is published should have boolean value"})
             }
         }
