@@ -222,6 +222,7 @@ const deleteBlogByQueryParams = async function (req, res) {
             else {
                 const token = req.headers["x-api-key"]
                 const decodedToken = jwt.verify(token, "functionup-Project-1-Blogging-Room-18")
+                if(!decodedToken) { return res.status(403).send({ status : false , msg : "author is not allowed to delete this blog"})}
                 let allDeleteData = []
                 for (let i = 0; i < bloggDetails.length; i++) {
                     if (decodedToken.authorId == bloggDetails[i].authorId) {
