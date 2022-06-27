@@ -9,7 +9,7 @@ const authenticate = function (req, res, next) {
         const token = req.headers["x-api-key"]
 
         if (!token) {
-            res.status(404).send({ status: false, msg: "token must be present" })
+            res.status(400).send({ status: false, msg: "token must be present" })
         }
         else {
             const validToken = jwt.decode(token)
@@ -19,11 +19,11 @@ const authenticate = function (req, res, next) {
                     next()
                 }
                 catch (error) {
-                    res.status(403).send({ status: false, msg: "Invalid token" })
+                    res.status(401).send({ status: false, msg: "Invalid token" })
                 }
             }
             else {
-                res.status(403).send({ status: false, msg: "Invalid token" })
+                res.status(400).send({ status: false, msg: "Invalid token" })
             }
         }
     }
@@ -42,7 +42,7 @@ const authorise = async function (req, res, next) {
         }
         const data = await blogModel.findById(blogIdParams).select({ authorId: 1, _id: 0 })
         if (!data) {
-            return res.status(401).send("provide valid blogId")
+            return res.status(400).send("provide valid blogId")
         }
         const token = req.headers["x-api-key"]
         const decodedToken = jwt.verify(token, "functionup-Project-1-Blogging-Room-18")
@@ -50,7 +50,7 @@ const authorise = async function (req, res, next) {
             next()
         }
         else {
-            res.status(401).send("Authorization failed")
+            res.status(403).send("Authorization failed")
         }
     }
     catch (error) {
