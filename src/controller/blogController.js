@@ -86,7 +86,7 @@ const getBlog = async function (req, res) {
             }
         }
         if (temp.length == 0) {
-            res.status(404).send({ status: false, msg: "data not found" })
+            res.status(404).send({ status: true, Data: blogs})
         }
         else res.status(200).send({ status: true, data: temp })
     } catch (err) {
