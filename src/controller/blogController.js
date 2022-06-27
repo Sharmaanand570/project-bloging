@@ -194,7 +194,6 @@ const deleteBlogByQueryParams = async function (req, res) {
     try {
         const data = req.query
         const { category, authorId } = data
-        let isPublishedData = data.isPublished
         const tagsData = data.tags
         const subcategoryData = data.subcategory
         if (!Object.keys(data).length == 0) {
@@ -203,26 +202,18 @@ const deleteBlogByQueryParams = async function (req, res) {
                     return res.status(400).send({ status: false, msg: "invalid AuthorID" })
                 }
             }
-            if (isPublishedData || isPublishedData == "") {
-                if (isPublishedData == "false") {
-                    isPublishedData == false
-                }
-                else {
-                    return res.status(400).send({ status: false, msg: "isPublished should be false" })
-                }
-            }
             const bloggDetails = await blogModel.find({
                 $or: [{
                     category
                 },
                 { authorId },
                 { tags: { $in: tagsData } },
-                { isPublished: isPublishedData },
                 {
                     subcategory: {
                         $in: subcategoryData,
                     }
                 }],
+                isPublished:false,
                 isDeleted: false
             }).select({authorId:1,_id:1})
             if (Object.keys(bloggDetails).length == 0) {
