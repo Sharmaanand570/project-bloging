@@ -50,7 +50,7 @@ const createBlog = async function (req, res) {
         }
         // validation end
         const saveData = await blogModel.create({title, body, authorId, category, tags, subcategory, isPublished})
-        return res.status(201).send({ status: true, Data : saveData })
+        return res.status(201).send({ status: true, data : saveData })
         
 
     }
@@ -88,9 +88,9 @@ const getBlog = async function (req, res) {
         if (temp.length == 0) {
             res.status(404).send({ status: false, msg: "data not found" })
         }
-        else res.status(200).send({ status: true, Data: temp })
+        else res.status(200).send({ status: true, data: temp })
     } catch (err) {
-        res.status(500).send({ status: false, error: err.message })
+        res.status(500).send({ status: false, msg: err.message })
     }
 }
 
@@ -155,7 +155,7 @@ const updateBlog = async function (req, res) {
         }
     }
     catch (err) {
-        res.status(500).send({ status: false, Error: err.message, });
+        res.status(500).send({ status: false, msg: err.message, });
     }
 }
 

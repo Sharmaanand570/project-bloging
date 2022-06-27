@@ -32,7 +32,7 @@ const createAuthor = async function (req, res) {
         } else { return res.status(400).send({ status: false, data: "fname is invalid" }) }
 
     } catch (err) {
-        return res.status(500).send({ status: false, error: err.message })
+        return res.status(500).send({ status: false, msg: err.message })
     }
 }
 
@@ -60,7 +60,7 @@ const authorLogin = async function (req, res) {
             "functionup-Project-1-Blogging-Room-18"
         );
         res.status(200).setHeader("x-api-key", token);
-        res.status(200).send({ status: true, token: token });
+        res.status(200).send({ status: true, data: token });
     }
     catch (error) {
         return res.status(500).send({ status: false, msg: error.message })
