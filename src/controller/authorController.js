@@ -11,7 +11,7 @@ const createAuthor = async function (req, res) {
         }
         const checkMail = await authorModel.findOne({ email: email });
         if (checkMail) {
-            return res.status(409).send({ status: false, msg: " duplicate email" })
+            return res.status(400).send({ status: false, msg: " duplicate email" })
         }
         if ((title !== "Mr") && (title !== "Mrs") && (title !== "Miss")) {
             return res.status(400).send({ status: false, msg: "please enter correct title eg Mr,Mrs,Miss" })
