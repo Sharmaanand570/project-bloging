@@ -31,7 +31,6 @@ const createBlog = async function (req, res) {
         if (!validator.isValid(body)) {
             return res.status(400).send({ status: false, msg: "body Required ( In string)" })
         }
-
         if (!validator.isValid(category)) {
             return res.status(400).send({ status: false, msg: "category required ( In string)" })
 
