@@ -9,7 +9,7 @@ const createBlog = async function (req, res) {
     try {
         const data = req.body
         const id = req.body.authorId
-        const {title, body, authorId, category, tags, subcategory, isPublished} = data
+        const { title, body, authorId, category, tags, subcategory, isPublished } = data
 
         // validation start
         if (Object.keys(data).length == 0) {
@@ -36,9 +36,9 @@ const createBlog = async function (req, res) {
             return res.status(400).send({ status: false, msg: "category required ( In string)" })
 
         }
-        if(isPublished || isPublished == "" || isPublished == false) {
-            if( typeof isPublished !== "boolean") {
-                return res.status(400).send({ status : false , msg : " is published should have boolean value"})
+        if (isPublished || isPublished == "" || isPublished == false) {
+            if (typeof isPublished !== "boolean") {
+                return res.status(400).send({ status: false, msg: " is published should have boolean value" })
             }
         }
         if (!mongoose.Types.ObjectId.isValid(authorId)) {
@@ -49,9 +49,9 @@ const createBlog = async function (req, res) {
             return res.status(400).send("Author not exists")
         }
         // validation end
-        const saveData = await blogModel.create({title, body, authorId, category, tags, subcategory, isPublished})
-        return res.status(201).send({ status: true, data : saveData })
-        
+        const saveData = await blogModel.create({ title, body, authorId, category, tags, subcategory, isPublished })
+        return res.status(201).send({ status: true, data: saveData })
+
 
     }
     catch (error) {
@@ -63,32 +63,37 @@ const createBlog = async function (req, res) {
 
 const getBlog = async function (req, res) {
     try {
-        const blogs = await blogModel.find({ isDeleted: false, isPublished: true });
-        if (blogs.length == 0) {
-            return res.status(404).send({ status: false, msg: "blogs not found" });
-        }
-        const { category, tag, subcategory, authorId } = req.query
-        let temp = []
-        for (let i = 0; i < blogs.length; i++) {
-            let x = blogs[i];
+        const filterData = { isDeleted: false, isPublished: true }
 
-            if ((x.authorId.toString() == authorId)) {
-                temp.push(x)
-            }
-            if ((x.category == category)) {
-                temp.push(x)
-            }
-            if ((x.subcategory.includes(subcategory))) {
-                temp.push(x)
-            }
-            if (x.tags.includes(tag)) {
-                temp.push(x)
-            }
+        const { category, tags, subcategory, authorId } = req.query
+
+        if (Object.keys(req.query).length == 0) {
+            return res.status(400).send({ status: false, msg: "invalid request put value in query params" })
         }
-        if (temp.length == 0) {
-            res.status(404).send({ status: true, msg: "data not found"})
+        if (authorId) {
+            if (!mongoose.Types.ObjectId.isValid(authorId)) {
+                return res.status(400).send({ status: false, msg: "invalid author Id" })
+            } else filterData["authorId"] = authorId
         }
-        else res.status(200).send({ status: true, data: temp })
+
+        if (validator.isValid(category)) {
+            filterData["category"] = category
+        }
+        if (validator.isValid(tags)) {
+            const tagArr = tags.trim().split(",").map(tags => tags.trim())
+            filterData["tags"] = { $all: tagArr }
+        }
+        if (subcategory) {
+            const subcategoryArr = subcategory.trim().split(",").map(subcategory => subcategory.trim())
+            filterData["subcategory"] = { $all: subcategoryArr }
+        }
+
+        const blogs = await blogModel.find(filterData)
+        if (Array.isArray(blogs) && blogs.length == 0) {
+            return res.status(404).send({ status: false, msg: " no blogs found " })
+        }
+        return res.status(200).send({ status: true, data: blogs })
+
     } catch (err) {
         res.status(500).send({ status: false, msg: err.message })
     }
@@ -213,16 +218,16 @@ const deleteBlogByQueryParams = async function (req, res) {
                         $in: subcategoryData,
                     }
                 }],
-                isPublished:false,
+                isPublished: false,
                 isDeleted: false
-            }).select({authorId:1,_id:1})
+            }).select({ authorId: 1, _id: 1 })
             if (Object.keys(bloggDetails).length == 0) {
                 res.status(404).send({ status: false, msg: "Blog Data is Not Available" })
             }
             else {
                 const token = req.headers["x-api-key"]
                 const decodedToken = jwt.verify(token, "functionup-Project-1-Blogging-Room-18")
-                if(!decodedToken) { return res.status(403).send({ status : false , msg : "author is not allowed to delete this blog"})}
+                if (!decodedToken) { return res.status(403).send({ status: false, msg: "author is not allowed to delete this blog" }) }
                 let allDeleteData = []
                 for (let i = 0; i < bloggDetails.length; i++) {
                     if (decodedToken.authorId == bloggDetails[i].authorId) {
