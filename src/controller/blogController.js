@@ -7,10 +7,8 @@ const jwt = require("jsonwebtoken")
 //================================================Create a Blogg======================================================
 const createBlog = async function (req, res) {
     try {
-        const data = req.body
         const id = req.body.authorId
-        const { title, body, authorId, category, tags, subcategory, isPublished } = data
-
+        let data = { title, body, authorId, category, tags, subcategory, isPublished } = req.body
         // validation start
         if (Object.keys(data).length == 0) {
             return res.status(400).send({ status: false, msg: "invalid request put valid data in body" })
@@ -31,7 +29,6 @@ const createBlog = async function (req, res) {
         if (!validator.isValid(body)) {
             return res.status(400).send({ status: false, msg: "body Required ( In string)" })
         }
-
         if (!validator.isValid(category)) {
             return res.status(400).send({ status: false, msg: "category required ( In string)" })
 
@@ -39,6 +36,12 @@ const createBlog = async function (req, res) {
         if (isPublished || isPublished == "" || isPublished == false) {
             if (typeof isPublished !== "boolean") {
                 return res.status(400).send({ status: false, msg: " is published should have boolean value" })
+            }
+            if (isPublished == true) {
+                data = { title, body, authorId, category, tags, subcategory, isPublished: true, publishedAt: new Date() }
+            }
+            if (isPublished == false) {
+                data = ({ title, body, authorId, category, tags, subcategory, isPublished: false })
             }
         }
         if (!mongoose.Types.ObjectId.isValid(authorId)) {
@@ -49,10 +52,8 @@ const createBlog = async function (req, res) {
             return res.status(400).send("Author not exists")
         }
         // validation end
-        const saveData = await blogModel.create({ title, body, authorId, category, tags, subcategory, isPublished })
+        const saveData = await blogModel.create(data)
         return res.status(201).send({ status: true, data: saveData })
-
-
     }
     catch (error) {
         return res.status(500).send({ status: false, msg: error.message })
@@ -197,37 +198,36 @@ const deleteBlogById = async function (req, res) {
 
 const deleteBlogByQueryParams = async function (req, res) {
     try {
-        const data = req.query
-        const { category, authorId } = data
-        const tagsData = data.tags
-        const subcategoryData = data.subcategory
-        if (!Object.keys(data).length == 0) {
+        const { category, authorId, tags, subcategory, isPublished } = req.query
+        const filterQuery = { isDeleted: false, deletedAt: null }
+        if (!Object.keys(req.query).length == 0) {
             if (authorId || authorId == "") {
                 if (!mongoose.Types.ObjectId.isValid(authorId)) {
                     return res.status(400).send({ status: false, msg: "invalid AuthorID" })
                 }
+                filterQuery['authorId'] = authorId
             }
-            const bloggDetails = await blogModel.find({
-                $or: [{
-                    category
-                },
-                { authorId },
-                { tags: { $in: tagsData } },
-                {
-                    subcategory: {
-                        $in: subcategoryData,
-                    }
-                }],
-                isPublished: false,
-                isDeleted: false
-            }).select({ authorId: 1, _id: 1 })
+            if (isPublished) {
+                filterQuery['isPublished'] = isPublished
+            }
+            if (category) {
+                filterQuery['category'] = category
+            }
+            if (tags) {
+                const tagsArr = tags.trim().split(',').map(tag => tag.trim())
+                filterQuery['tags'] = { $all: tagsArr }
+            }
+            if (subcategory) {
+                const subcategoryArr = subcategory.trim().split(',').map(subcategory => subcategory.trim())
+                filterQuery['subcategory'] = { $all: subcategoryArr }
+            }
+            const bloggDetails = await blogModel.find(filterQuery)
             if (Object.keys(bloggDetails).length == 0) {
                 res.status(404).send({ status: false, msg: "Blog Data is Not Available" })
             }
             else {
                 const token = req.headers["x-api-key"]
                 const decodedToken = jwt.verify(token, "functionup-Project-1-Blogging-Room-18")
-                if (!decodedToken) { return res.status(403).send({ status: false, msg: "author is not allowed to delete this blog" }) }
                 let allDeleteData = []
                 for (let i = 0; i < bloggDetails.length; i++) {
                     if (decodedToken.authorId == bloggDetails[i].authorId) {
@@ -245,7 +245,7 @@ const deleteBlogByQueryParams = async function (req, res) {
             }
         }
         else {
-            res.status(400).send({ status: false, msg: "Invalid Data" })
+            res.status(400).send({ status: false, msg: "please enter query to delete" })
         }
     }
     catch (error) {
