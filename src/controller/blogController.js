@@ -108,57 +108,60 @@ const updateBlog = async function (req, res) {
         const blogId = req.params.blogId;
         const bodyData = req.body;
         const { title, body, tags, subcategory } = bodyData;
-        if (Object.keys(bodyData).length == 0) {
+        if (title || body || tags || subcategory) {
+            if (!mongoose.Types.ObjectId.isValid(blogId)) {
+                return res.status(400).send({ status: false, msg: "BlogId invalid " })
+            }
+            if (title || title === "") {
+                if (!validator.isValid(title)) {
+                    return res
+                        .status(400)
+                        .send({ status: false, message: "Title is required " });
+                }
+            }
+            if (body || body === "") {
+                if (!validator.isValid(body)) {
+                    return res
+                        .status(400)
+                        .send({ status: false, message: "Body is required " });
+                }
+            }
+            if (tags || tags === "") {
+                if (!validator.isValidArray(tags)) {
+                    return res
+                        .status(400)
+                        .send({ status: false, message: "tags is required " });
+                }
+            }
+            if (subcategory || subcategory === "") {
+                if (!validator.isValidArray(subcategory)) {
+                    return res.status(400).send({
+                        status: false,
+                        message: "subcategory is required ",
+                    });
+                }
+            }
+            const blog = await blogModel.findOne({ _id: blogId, isDeleted: false });
+            if (!blog) {
+                return res.status(400).send({ status: false, msg: "No such blog found" });
+            }
+            const updatedBlog = await blogModel.findByIdAndUpdate({ _id: blogId },
+                {
+                    title: title, body: body, $addToSet: { tags: tags, subcategory: subcategory },
+                    isPublished: true, publishedAt: new Date()
+                }, { new: true });
+            if (updateBlog) {
+                res.status(200).send({ status: true, message: "Successfully updated blog details", data: updatedBlog, });
+            }
+            else {
+                res.status(404).send({ status: false, msg: "blog not found" })
+            }
+        }
+        else{
             return res.status(400).send(
-                { status: false, message: "There is no data  in body Please provide some details" });
+                { status: false, message: "There is no data or no valid data in body please provide valid data" });
         }
-        if (!mongoose.Types.ObjectId.isValid(blogId)) {
-            return res.status(400).send({ status: false, msg: "BlogId invalid " })
-        }
-        if (title || title === "") {
-            if (!validator.isValid(title)) {
-                return res
-                    .status(400)
-                    .send({ status: false, message: "Title is required " });
-            }
-        }
-        if (body || body === "") {
-            if (!validator.isValid(body)) {
-                return res
-                    .status(400)
-                    .send({ status: false, message: "Body is required " });
-            }
-        }
-        if (tags || tags === "") {
-            if (!validator.isValidArray(tags)) {
-                return res
-                    .status(400)
-                    .send({ status: false, message: "tags is required " });
-            }
-        }
-        if (subcategory || subcategory === "") {
-            if (!validator.isValidArray(subcategory)) {
-                return res.status(400).send({
-                    status: false,
-                    message: "subcategory is required ",
-                });
-            }
-        }
-        const Blog = await blogModel.findOne({ _id: blogId, isDeleted: false });
-        if (!Blog) {
-            return res.status(400).send({ status: false, msg: "No such blog found" });
-        }
-        const updatedBlog = await blogModel.findByIdAndUpdate({ _id: blogId },
-            {
-                title: title, body: body, $addToSet: { tags: tags, subcategory: subcategory },
-                isPublished: true, publishedAt: new Date()
-            }, { new: true });
-        if (updateBlog) {
-            res.status(200).send({ status: true, message: "Successfully updated blog details", data: updatedBlog, });
-        }
-        else {
-            res.status(404).send({ status: false, msg: "blog not found" })
-        }
+        
     }
     catch (err) {
         res.status(500).send({ status: false, msg: err.message, });
