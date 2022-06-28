@@ -10,9 +10,9 @@ const blogSchema = new mongoose.Schema( {
     tags : [String],
     category : {type: String , required : true },
     subcategory : { type : [String], },
-    deletedAt : String,
+    deletedAt : {type:String, default:null},
     isDeleted : { type : Boolean , default : false},
-    publishedAt : String ,
+    publishedAt : {type:String, default:null} ,
     isPublished : { type : Boolean , default : false }           
 }, {timestamps : true});
 
